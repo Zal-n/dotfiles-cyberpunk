@@ -1,0 +1,12 @@
+{
+  "bg": "#0a0b10",
+  "surface": "#121520",
+  "surface_accent": "#1a1e2d",
+  "cyan": "#00f0ff",
+  "magenta": "#ff0055",
+  "yellow": "#ffe600",
+  "fg": "#e0e6ed",
+  "fg_dim": "#565f89",
+  "border_glow": "#00f0ff88",
+  "font": "JetBrainsMono Nerd Font"
+}
