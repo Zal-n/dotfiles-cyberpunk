@@ -37,7 +37,7 @@ ShellRoot {
                 { "id": "clock", "preset": "time-date" }
             ],
             "right": [
-                { "id": "battery", "preset": "icon-percent", "device": "BAT0" },
+                { "id": "battery", "preset": "status-label", "device": "BAT0" },
                 { "id": "settings", "preset": "default" },
                 { "id": "controlCenter", "preset": "default" }
             ]

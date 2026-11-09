@@ -308,7 +308,7 @@ PanelWindow {
                     if (battery.capacity >= 10) return "low";
                     return "critical";
                 }
-                visible: battery.preset.showIcon !== false
+                visible: battery.preset.style === "icon-label" && battery.preset.showIcon !== false
                 text: iconSet[level] ?? iconSet.unknown ?? "󰁹"
                 color: battery.status === "Charging"
                     ? bar.presetColor(battery.preset.chargingColor)
@@ -318,8 +318,12 @@ PanelWindow {
             }
 
             Text {
-                visible: battery.preset.showPercentage !== false && battery.capacity >= 0
-                text: battery.capacity + "%"
+                visible: battery.capacity >= 0
+                text: {
+                    var percentage = battery.capacity;
+                    var format = battery.preset.format ?? "{percentage}%";
+                    return format.replace("{percentage}", percentage);
+                }
                 color: battery.status === "Charging"
                     ? bar.presetColor(battery.preset.chargingColor)
                     : bar.presetColor(battery.preset.normalColor)

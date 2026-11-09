@@ -80,7 +80,35 @@
     }
   },
   "battery": {
-    "icon-percent": {
+    "status-label": {
+      "style": "status-label",
+      "format": "PWR // {percentage}%",
+      "showIcon": false,
+      "showPercentage": true,
+      "chargingColor": "cyan",
+      "normalColor": "fg",
+      "fontSize": 11,
+      "icons": {
+        "charging": "󰂄",
+        "full": "󰁹",
+        "high": "󰂂",
+        "medium": "󰂀",
+        "low": "󰁻",
+        "critical": "󰂃",
+        "unknown": "󰁹"
+      }
+    },
+    "bracketed": {
+      "style": "bracketed",
+      "format": "[ BAT {percentage}% ]",
+      "showIcon": false,
+      "showPercentage": true,
+      "chargingColor": "cyan",
+      "normalColor": "fg",
+      "fontSize": 11
+    },
+    "icon-label": {
+      "style": "icon-label",
       "showIcon": true,
       "showPercentage": true,
       "chargingColor": "cyan",
