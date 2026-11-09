@@ -196,7 +196,7 @@ PanelWindow {
 
             Process {
                 id: workspaceEvents
-                command: ["niri", "msg", "event-stream"]
+                command: ["niri", "msg", "--json", "event-stream"]
                 running: true
                 stdout: SplitParser {
                     splitMarker: "\n"
