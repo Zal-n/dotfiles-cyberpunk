@@ -42,9 +42,9 @@ PanelWindow {
             Repeater {
                 model: bar.cfg.left ?? []
                 delegate: Loader {
-                    required property var modelData
                     property var moduleConfig: modelData
                     sourceComponent: bar.moduleComponent(modelData.id)
+                    onLoaded: item.moduleConfig = moduleConfig
                 }
             }
         }
@@ -55,9 +55,9 @@ PanelWindow {
             Repeater {
                 model: bar.cfg.center ?? []
                 delegate: Loader {
-                    required property var modelData
                     property var moduleConfig: modelData
                     sourceComponent: bar.moduleComponent(modelData.id)
+                    onLoaded: item.moduleConfig = moduleConfig
                 }
             }
         }
@@ -69,9 +69,9 @@ PanelWindow {
             Repeater {
                 model: bar.cfg.right ?? []
                 delegate: Loader {
-                    required property var modelData
                     property var moduleConfig: modelData
                     sourceComponent: bar.moduleComponent(modelData.id)
+                    onLoaded: item.moduleConfig = moduleConfig
                 }
             }
         }
@@ -101,7 +101,7 @@ PanelWindow {
     Component {
         id: logoModule
         Text {
-            required property var moduleConfig
+            property var moduleConfig: ({})
             readonly property var preset: bar.modulePreset(moduleConfig)
             visible: moduleConfig.visible !== false
             text: preset.text ?? ""
@@ -115,7 +115,7 @@ PanelWindow {
     Component {
         id: clockModule
         Text {
-            required property var moduleConfig
+            property var moduleConfig: ({})
             readonly property var preset: bar.modulePreset(moduleConfig)
             color: Theme.yellow
             font.family: Theme.fontFamily
@@ -142,7 +142,7 @@ PanelWindow {
     Component {
         id: separatorModule
         Text {
-            required property var moduleConfig
+            property var moduleConfig: ({})
             readonly property var preset: bar.modulePreset(moduleConfig)
             text: preset.text ?? "//"
             color: Theme.fgDim
@@ -154,7 +154,7 @@ PanelWindow {
     Component {
         id: settingsModule
         Rectangle {
-            required property var moduleConfig
+            property var moduleConfig: ({})
             readonly property var preset: bar.modulePreset(moduleConfig)
             width: 30
             height: 26
@@ -178,7 +178,7 @@ PanelWindow {
     Component {
         id: controlCenterModule
         Rectangle {
-            required property var moduleConfig
+            property var moduleConfig: ({})
             readonly property var preset: bar.modulePreset(moduleConfig)
             width: 100
             height: 26
