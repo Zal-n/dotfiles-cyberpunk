@@ -10,6 +10,28 @@ ShellRoot {
     property bool controlCenterOpen: false
     property bool launcherOpen: false
     property bool settingsOpen: false
+    readonly property var defaultConfig: ({
+        "theme": {
+            "bg": "#0a0b10",
+            "surface": "#121520",
+            "surfaceAccent": "#1a1e2d",
+            "cyan": "#00f0ff",
+            "magenta": "#ff0055",
+            "yellow": "#ffe600",
+            "fg": "#e0e6ed",
+            "fgDim": "#565f89",
+            "fontFamily": "JetBrainsMono Nerd Font"
+        },
+        "desktop": {
+            "wallpaper": "",
+            "barHeight": 38,
+            "cornerCutSize": 25
+        },
+        "hardware": {
+            "brightnessDevice": "intel_backlight",
+            "audioSink": "@DEFAULT_AUDIO_SINK@"
+        }
+    })
     property var config: ({})
 
     FileView {
@@ -18,12 +40,9 @@ ShellRoot {
       blockLoading: true
 
       watchChanges: true
-      onLoaded: root.loadJson();
-      onFileChanged: {
-        console.log("reload called");
-        Quickshell.reload(false);
-        root.loadJson();
-      }
+      onLoaded: root.loadJson()
+      onFileChanged: configFile.reload()
+      onLoadFailed: root.createDefaultConfig(error)
       JsonAdapter {
       } 
     }
@@ -31,20 +50,39 @@ ShellRoot {
     function loadJson() {
         try {
             var rawText = typeof configFile.text === "function" ? configFile.text() : configFile.text;
-            if (rawText && rawText.length > 0) {
-                var parsed = JSON.parse(rawText);
-                root.config = parsed;
-                Theme.rawConfig = parsed;
+            if (!rawText || rawText.trim().length === 0) {
+                throw new Error("configuration file is empty");
             }
+
+            var parsed = JSON.parse(rawText);
+            if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+                throw new Error("configuration root must be an object");
+            }
+            root.applyConfig(parsed);
         } catch (e) {
-            console.log("JSON Parse error: " + e);
+            console.log("JSON config parse error: " + e);
         }
     }
 
-    function saveConfig(newConfig){
+    function applyConfig(newConfig) {
       root.config = newConfig;
       Theme.rawConfig = newConfig;
-      configFile.setText(JSON.stringify(newConfig, null, 2))
+    }
+
+    function saveConfig(newConfig) {
+      root.applyConfig(newConfig);
+      configFile.setText(JSON.stringify(newConfig, null, 2));
+    }
+
+    function createDefaultConfig(error) {
+      if (error !== FileViewError.FileNotFound) {
+        console.log("JSON config load error: " + FileViewError.toString(error));
+        return;
+      }
+
+      var defaults = JSON.parse(JSON.stringify(root.defaultConfig));
+      root.applyConfig(defaults);
+      configFile.setText(JSON.stringify(defaults, null, 2));
     }
 
 

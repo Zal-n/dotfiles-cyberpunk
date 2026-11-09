@@ -11,8 +11,8 @@
     "fontFamily": "JetBrainsMono Nerd Font"
   },
   "desktop": {
-    "wallpaper": "/home/katon/Pictures/Wallpaper/acer-laptop-stock-5120x2880-14305.jpg",
-    "barHeight": 38,
+    "wallpaper": "",
+    "barHeight": 28,
     "cornerCutSize": 25
   },
   "hardware": {
