@@ -87,7 +87,7 @@
       "showPercentage": true,
       "chargingColor": "cyan",
       "normalColor": "fg",
-      "fontSize": 11,
+      "fontSize": 13,
       "icons": {
         "charging": "󰂄",
         "full": "󰁹",
@@ -103,16 +103,16 @@
       "format": "[ BAT {percentage}% ]",
       "showIcon": false,
       "showPercentage": true,
-      "chargingColor": "cyan",
-      "normalColor": "fg",
-      "fontSize": 11
+      "chargingColor": "yellow",
+      "normalColor": "cyan",
+      "fontSize": 13
     },
     "icon-label": {
       "style": "icon-label",
       "showIcon": true,
       "showPercentage": true,
-      "chargingColor": "cyan",
-      "normalColor": "fg",
+      "chargingColor": "yellow",
+      "normalColor": "cyan",
       "fontSize": 13,
       "icons": {
         "charging": "󰂄",
@@ -127,7 +127,7 @@
     "percentage": {
       "showIcon": false,
       "showPercentage": true,
-      "normalColor": "fg",
+      "normalColor": "cyan",
       "fontSize": 13
     }
   }
