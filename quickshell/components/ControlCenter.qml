@@ -33,7 +33,7 @@ PanelWindow {
             anchors.fill: parent
             onPaint: {
                 var ctx = getContext("2d");
-                var cut = 25; // Lecsapás mérete (bal alsó sarok)
+                var cut = Theme.cornerCutSize; // Lecsapás mérete (bal alsó sarok)
                 ctx.clearRect(0, 0, width, height);
                 ctx.beginPath();
                 ctx.moveTo(0, 0);
@@ -137,7 +137,7 @@ PanelWindow {
                         anchors.fill: parent
                         onPaint: {
                         var ctx = getContext("2d");
-                        var cut = 15;
+                        var cut = Theme.cornerCutSizeSmall;
                         ctx.clearRect(0, 0, width, height);
                         ctx.beginPath();
 

@@ -63,7 +63,7 @@ PanelWindow {
                     anchors.fill: parent
                     onPaint: {
                     var ctx = getContext("2d");
-                    var cut = 15;
+                    var cut = Theme.cornerCutSizeSmall;
                     ctx.clearRect(0, 0, width, height);
                     ctx.beginPath();
 

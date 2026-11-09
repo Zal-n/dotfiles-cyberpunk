@@ -17,5 +17,6 @@ QtObject {
 
   readonly property int barHeight: rawConfig.desktop?.barHeight ?? 38
   readonly property int cornerCutSize: rawConfig.desktop?.cornerCutSize ?? 25
+  readonly property int cornerCutSizeSmall: rawConfig.desktop?.cornerCutSizeSmall ?? 15
   readonly property string wallpaper: rawConfig.desktop?.wallpaper ? rawConfig.desktop.wallpaper : ""
 }

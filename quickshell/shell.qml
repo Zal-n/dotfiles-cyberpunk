@@ -25,7 +25,8 @@ ShellRoot {
         "desktop": {
             "wallpaper": "",
             "barHeight": 38,
-            "cornerCutSize": 25
+            "cornerCutSize": 25,
+            "cornerCutSizeSmall": 15
         },
         "hardware": {
             "brightnessDevice": "intel_backlight",
