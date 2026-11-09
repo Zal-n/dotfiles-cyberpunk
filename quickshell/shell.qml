@@ -30,7 +30,8 @@ ShellRoot {
         },
         "topbar": {
             "left": [
-                { "id": "logo", "preset": "sys-niri" }
+                { "id": "logo", "preset": "sys-niri" },
+                { "id": "workspaceDisplay", "preset": "dots" }
             ],
             "center": [
                 { "id": "clock", "preset": "time-date" }

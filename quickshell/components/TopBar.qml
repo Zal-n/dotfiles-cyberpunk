@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
+import Quickshell.Io
 import Quickshell.Wayland
 import ".."
 
@@ -93,6 +94,8 @@ PanelWindow {
             return controlCenterModule;
         case "separator":
             return separatorModule;
+        case "workspaceDisplay":
+            return workspaceDisplayModule;
         default:
             return null;
         }
@@ -148,6 +151,118 @@ PanelWindow {
             color: Theme.fgDim
             font.family: Theme.fontFamily
             font.bold: true
+        }
+    }
+
+    Component {
+        id: workspaceDisplayModule
+        Row {
+            id: workspaceDisplay
+            property var moduleConfig: ({})
+            readonly property var preset: bar.modulePreset(moduleConfig)
+            property var workspaces: []
+            spacing: preset.spacing ?? 6
+
+            Process {
+                id: workspaceProcess
+                command: ["niri", "msg", "-j", "workspaces"]
+                running: true
+                stdout: StdioCollector {
+                    onStreamFinished: {
+                        try {
+                            var parsed = JSON.parse(text);
+                            workspaceDisplay.workspaces = Array.isArray(parsed) ? parsed : [];
+                        } catch (e) {
+                            workspaceDisplay.workspaces = [];
+                        }
+                    }
+                }
+                onRunningChanged: {
+                    if (!running) {
+                        refreshTimer.restart();
+                    }
+                }
+            }
+
+            Timer {
+                id: refreshTimer
+                interval: 1000
+                repeat: true
+                running: true
+                onTriggered: workspaceProcess.running = true
+            }
+
+            Repeater {
+                model: workspaceDisplay.workspaces
+                delegate: Loader {
+                    property var workspace: modelData
+                    property var workspacePreset: bar.modulePreset(workspaceDisplay.moduleConfig)
+                    sourceComponent: {
+                        switch (workspacePreset.style ?? "dots") {
+                        case "numbers":
+                            return numberWorkspace;
+                        case "rectangles":
+                            return rectangleWorkspace;
+                        default:
+                            return dotWorkspace;
+                        }
+                    }
+                    onLoaded: {
+                        item.workspace = workspace;
+                        item.preset = workspacePreset;
+                    }
+                }
+            }
+
+            Component {
+                id: dotWorkspace
+                Rectangle {
+                    property var workspace: ({})
+                    property var preset: ({})
+                    width: preset.size ?? 7
+                    height: width
+                    radius: width / 2
+                    color: workspace.is_focused ? bar.presetColor(preset.activeColor) : bar.presetColor(preset.inactiveColor)
+                }
+            }
+
+            Component {
+                id: rectangleWorkspace
+                Rectangle {
+                    property var workspace: ({})
+                    property var preset: ({})
+                    width: preset.width ?? 16
+                    height: preset.height ?? 5
+                    color: workspace.is_focused ? bar.presetColor(preset.activeColor) : bar.presetColor(preset.inactiveColor)
+                }
+            }
+
+            Component {
+                id: numberWorkspace
+                Text {
+                    property var workspace: ({})
+                    property var preset: ({})
+                    text: workspace.idx ?? workspace.id ?? "?"
+                    color: workspace.is_focused ? bar.presetColor(preset.activeColor) : bar.presetColor(preset.inactiveColor)
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 11
+                }
+            }
+        }
+    }
+
+    function presetColor(name) {
+        switch (name) {
+        case "cyan":
+            return Theme.cyan;
+        case "magenta":
+            return Theme.magenta;
+        case "yellow":
+            return Theme.yellow;
+        case "fg":
+            return Theme.fg;
+        default:
+            return Theme.fgDim;
         }
     }
 

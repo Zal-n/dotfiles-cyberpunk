@@ -55,5 +55,28 @@
     "default-reverse": {
       "text": "\\"
     }
+  },
+  "workspaceDisplay": {
+    "dots": {
+      "style": "dots",
+      "activeColor": "cyan",
+      "inactiveColor": "fgDim",
+      "size": 7,
+      "spacing": 6
+    },
+    "rectangles": {
+      "style": "rectangles",
+      "activeColor": "cyan",
+      "inactiveColor": "fgDim",
+      "width": 16,
+      "height": 5,
+      "spacing": 5
+    },
+    "numbers": {
+      "style": "numbers",
+      "activeColor": "cyan",
+      "inactiveColor": "fgDim",
+      "spacing": 8
+    }
   }
 }
