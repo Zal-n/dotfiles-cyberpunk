@@ -13,14 +13,19 @@ PanelWindow {
     WlrLayershell.layer: WlrLayer.Overlay
 
     anchors { top: true; right: true }
-    margins.top: 44
+    margins.top: 16
     margins.right: 16
-
+    visible: false
     implicitWidth: 340
     implicitHeight: 420
     color: "transparent"
 
-    // Lecsapott sarkú Cyberpunk háttér (bal alsó sarok lecsapva)
+
+    MouseArea {
+      id: mouseArea
+      anchors.fill: parent
+      hoverEnabled: true
+    }
     Item {
         anchors.fill: parent
 

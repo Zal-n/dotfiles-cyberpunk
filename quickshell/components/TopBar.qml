@@ -8,7 +8,8 @@ PanelWindow {
     id: bar
     signal controlCenterToggled()
     signal settingsToggled()
-    
+
+    readonly property bool isHovered: mouseArea.containsMouse || cc.mouseArea.containsMouse
 
     WlrLayershell.layer: WlrLayer.Top
 
@@ -101,8 +102,31 @@ PanelWindow {
             }
 
             MouseArea {
+                id: mouseArea
                 anchors.fill: parent
-                onClicked: bar.controlCenterToggled()
+                //onClicked: bar.controlCenterToggled()
+                hoverEnabled: true
+            }
+            Timer {
+                id: openTimer
+                interval: 200
+                repeat: false
+                onTriggered: {
+                    if (bar.isHovered) {
+                        cc.visible = true
+                    }
+                }
+            }
+
+            Timer {
+                id: closeTimer
+                interval: 150
+                repeat: false
+                onTriggered: {
+                    if (!bar.isHovered) {
+                        cc.visible = false
+                    }
+                }
             }
         }
     }

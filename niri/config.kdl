@@ -1,62 +1,58 @@
 output "eDP-1" {
-    mode "1920x1080@165.000"
-    scale 1.0
+    mode "2560x1600@165.000"
+    scale 1.5
+}
+input {
+  keyboard{
+    xkb {
+      layout "hu"
+    }
+  }
+  touchpad {
+    tap
+    natural-scroll
+  }
+}
+
+hotkey-overlay {
+  skip-at-startup
 }
 
 layout {
     gaps 12
     center-focused-column "never"
-    
+    background-color "transparent" 
 
+    focus-ring {
+        width 4
+        active-color "#0c0e12"
+        inactive-color "#0c0e12"
+    }
     border {
-        width 1
+        
+
+        width 2
         active-color "#00f0ff"
         inactive-color "#121520"
+
+        urgent-color "#9b0000"
+    }
+    shadow {
+      softness 30
+      spread 5
+      offset x=0 y=5
+      color "#0007"
     }
 }
+prefer-no-csd
+
+include "binds.kdl"
 
 // Start Quickshell DE
 spawn-at-startup "quickshell"
 
-binds {
-    // Custom Core Bindings
-    Mod+T       { spawn "kitty"; }
-    Mod+A       { spawn "quickshell" "ipc" "call" "shell" "toggleLauncher"; }
-    Mod+C       { spawn "quickshell" "ipc" "call" "shell" "toggleControlCenter"; }
-    Mod+F       { maximize-column; }
-    Mod+Shift+F { fullscreen-window; }
-    Mod+Q       { close-window; }
-    
-
-
-    // Niri Default Column Navigation
-    Mod+Left  { focus-column-left; }
-    Mod+Right { focus-column-right; }
-    Mod+H     { focus-column-left; }
-    Mod+L     { focus-column-right; }
-
-    // Niri Default Window / Workspace Focus
-    Mod+Down  { focus-window-or-workspace-down; }
-    Mod+Up    { focus-window-or-workspace-up; }
-    Mod+J     { focus-window-or-workspace-down; }
-    Mod+K     { focus-window-or-workspace-up; }
-
-    // Niri Default Movement
-    Mod+Shift+Left  { move-column-left; }
-    Mod+Shift+Right { move-column-right; }
-    Mod+Shift+H     { move-column-left; }
-    Mod+Shift+L     { move-column-right; }
-
-    // Workspaces
-    Mod+1 { focus-workspace 1; }
-    Mod+2 { focus-workspace 2; }
-    Mod+3 { focus-workspace 3; }
-    Mod+4 { focus-workspace 4; }
-    Mod+Shift+1 { move-column-to-workspace 1; }
-    Mod+Shift+2 { move-column-to-workspace 2; }
-    Mod+Shift+3 { move-column-to-workspace 3; }
-    Mod+Shift+4 { move-column-to-workspace 4; }
-
-    // Session
-    Mod+Shift+E { quit; }
+gestures {
+  hot-corners {
+    off 
+  }
 }
