@@ -12,6 +12,7 @@ PanelWindow {
 
     readonly property var cfg: root.config.topbar ?? ({})
     readonly property var presets: root.topbarPresets
+    property var popupModules: ({})
 
     WlrLayershell.layer: WlrLayer.Top
 
@@ -50,6 +51,7 @@ PanelWindow {
                     onLoaded: {
                         item.topbar = bar;
                         item.moduleConfig = moduleConfig;
+                        bar.registerPopupModule(item);
                     }
                 }
             }
@@ -68,6 +70,7 @@ PanelWindow {
                     onLoaded: {
                         item.topbar = bar;
                         item.moduleConfig = moduleConfig;
+                        bar.registerPopupModule(item);
                     }
                 }
             }
@@ -87,6 +90,7 @@ PanelWindow {
                     onLoaded: {
                         item.topbar = bar;
                         item.moduleConfig = moduleConfig;
+                        bar.registerPopupModule(item);
                     }
                 }
             }
@@ -95,6 +99,20 @@ PanelWindow {
 
     function modulePreset(module) {
         return bar.presets[module.id]?.[module.preset ?? "default"] ?? ({});
+    }
+
+    function registerPopupModule(module) {
+        if (module.popupKey !== undefined) {
+            bar.popupModules[module.popupKey] = module;
+        }
+    }
+
+    function togglePopup(module) {
+        var shouldOpen = !module.popupOpen;
+        Object.keys(bar.popupModules).forEach(function(key) {
+            bar.popupModules[key].popupOpen = false;
+        });
+        module.popupOpen = shouldOpen;
     }
 
     function moduleWidth(module) {

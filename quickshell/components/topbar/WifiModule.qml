@@ -13,6 +13,7 @@ Item {
     property string ssid: ""
     property int signal: 0
     property bool popupOpen: false
+    readonly property string popupKey: "wifi"
     width: wifiIcon.width
     height: wifiIcon.height
 
@@ -72,7 +73,7 @@ Item {
         MouseArea {
             anchors.fill: parent
             cursorShape: Qt.PointingHandCursor
-            onClicked: wifi.popupOpen = !wifi.popupOpen
+            onClicked: wifi.topbar.togglePopup(wifi)
         }
     }
 

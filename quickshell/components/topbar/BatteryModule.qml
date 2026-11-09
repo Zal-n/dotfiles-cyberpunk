@@ -12,6 +12,7 @@ Item {
     property int capacity: -1
     property string status: "Unknown"
     property bool popupOpen: false
+    readonly property string popupKey: "battery"
     readonly property bool isCharging: status.trim().toLowerCase() === "charging"
     width: batteryContent.implicitWidth
     height: batteryContent.implicitHeight
@@ -97,7 +98,7 @@ Item {
     MouseArea {
         anchors.fill: batteryContent
         cursorShape: Qt.PointingHandCursor
-        onClicked: battery.popupOpen = !battery.popupOpen
+        onClicked: battery.topbar.togglePopup(battery)
     }
 
     PanelWindow {
