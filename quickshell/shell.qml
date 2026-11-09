@@ -3,6 +3,7 @@ import Quickshell
 import Quickshell.Wayland
 import Quickshell.Io
 import "./components"
+import "./components/topbar"
 
 ShellRoot {
     id: root
@@ -188,6 +189,14 @@ ShellRoot {
       }
       onPopupOpened: root.controlCenterOpen = false
       onSettingsToggled: root.settingsOpen = !root.settingsOpen
+    }
+
+    BatteryPopup {
+      battery: topbar.batteryModule
+    }
+
+    WifiPopup {
+      wifi: topbar.wifiModule
     }
 
     ControlCenter {

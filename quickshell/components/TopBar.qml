@@ -14,6 +14,8 @@ PanelWindow {
     readonly property var cfg: root.config.topbar ?? ({})
     readonly property var presets: root.topbarPresets
     property var popupModules: ({})
+    property var batteryModule: null
+    property var wifiModule: null
 
     WlrLayershell.layer: WlrLayer.Top
 
@@ -105,6 +107,11 @@ PanelWindow {
     function registerPopupModule(module) {
         if (module.popupKey !== undefined) {
             bar.popupModules[module.popupKey] = module;
+            if (module.popupKey === "battery") {
+                bar.batteryModule = module;
+            } else if (module.popupKey === "wifi") {
+                bar.wifiModule = module;
+            }
         }
     }
 
