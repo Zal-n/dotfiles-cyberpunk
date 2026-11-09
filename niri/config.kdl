@@ -50,7 +50,7 @@ prefer-no-csd
 include "binds.kdl"
 
 // Start Quickshell DE
-spawn-at-startup "quickshell"
+spawn-at-startup "sh" "-c" "QS_NO_RELOAD_POPUP=1 quickshell"
 
 gestures {
   hot-corners {

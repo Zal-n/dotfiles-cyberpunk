@@ -58,7 +58,10 @@ ShellRoot {
 
       watchChanges: true
       onLoaded: root.loadJson()
-      onFileChanged: configFile.reload()
+      onFileChanged: {
+        configFile.reload();
+        reloadToast.showToast("CONFIG // RELOADED", false);
+      }
       onLoadFailed: root.createDefaultConfig(error)
       JsonAdapter {
       } 
@@ -71,8 +74,14 @@ ShellRoot {
       watchChanges: true
 
       onLoaded: root.loadTopbarPresets()
-      onFileChanged: topbarPresetsFile.reload()
-      onLoadFailed: console.log("TopBar presets load error: " + FileViewError.toString(error))
+      onFileChanged: {
+        topbarPresetsFile.reload();
+        reloadToast.showToast("PRESETS // RELOADED", false);
+      }
+      onLoadFailed: {
+        console.log("TopBar presets load error: " + FileViewError.toString(error));
+        reloadToast.showToast("PRESETS // LOAD ERROR", true);
+      }
     }
 
     function loadJson() {
@@ -89,6 +98,7 @@ ShellRoot {
             root.applyConfig(parsed);
         } catch (e) {
             console.log("JSON config parse error: " + e);
+            reloadToast.showToast("CONFIG // PARSE ERROR", true);
         }
     }
 
@@ -107,6 +117,7 @@ ShellRoot {
         root.topbarPresets = parsed;
       } catch (e) {
         console.log("TopBar presets parse error: " + e);
+        reloadToast.showToast("PRESETS // PARSE ERROR", true);
       }
     }
 
@@ -163,6 +174,10 @@ ShellRoot {
 
     BackgroundManager {
       wallpaperPath: root.config.desktop?.wallpaper ?? ""
+    }
+
+    ReloadToast {
+      id: reloadToast
     }
 
     TopBar {
