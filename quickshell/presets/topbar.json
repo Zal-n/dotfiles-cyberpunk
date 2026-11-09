@@ -78,5 +78,29 @@
       "inactiveColor": "fgDim",
       "spacing": 8
     }
+  },
+  "battery": {
+    "icon-percent": {
+      "showIcon": true,
+      "showPercentage": true,
+      "chargingColor": "cyan",
+      "normalColor": "fg",
+      "fontSize": 13,
+      "icons": {
+        "charging": "󰂄",
+        "full": "󰁹",
+        "high": "󰂂",
+        "medium": "󰂀",
+        "low": "󰁻",
+        "critical": "󰂃",
+        "unknown": "󰁹"
+      }
+    },
+    "percentage": {
+      "showIcon": false,
+      "showPercentage": true,
+      "normalColor": "fg",
+      "fontSize": 13
+    }
   }
 }
