@@ -167,6 +167,10 @@ PanelWindow {
             property var workspaces: []
             spacing: preset.spacing ?? 6
 
+            function workspaceIsFocused(workspace) {
+                return workspace.is_focused === true || workspace.is_focused === "true";
+            }
+
             Process {
                 id: workspaceProcess
                 command: ["niri", "msg", "-j", "workspaces"]
@@ -241,7 +245,9 @@ PanelWindow {
                     width: preset.size ?? 7
                     height: width
                     radius: width / 2
-                    color: workspace.is_focused ? bar.presetColor(preset.activeColor) : bar.presetColor(preset.inactiveColor)
+                    color: workspaceDisplay.workspaceIsFocused(workspace)
+                        ? bar.presetColor(preset.activeColor)
+                        : bar.presetColor(preset.inactiveColor)
 
                     MouseArea {
                         anchors.fill: parent
@@ -258,7 +264,9 @@ PanelWindow {
                     property var preset: ({})
                     width: preset.width ?? 16
                     height: preset.height ?? 5
-                    color: workspace.is_focused ? bar.presetColor(preset.activeColor) : bar.presetColor(preset.inactiveColor)
+                    color: workspaceDisplay.workspaceIsFocused(workspace)
+                        ? bar.presetColor(preset.activeColor)
+                        : bar.presetColor(preset.inactiveColor)
 
                     MouseArea {
                         anchors.fill: parent
@@ -274,7 +282,9 @@ PanelWindow {
                     property var workspace: ({})
                     property var preset: ({})
                     text: workspace.idx ?? workspace.id ?? "?"
-                    color: workspace.is_focused ? bar.presetColor(preset.activeColor) : bar.presetColor(preset.inactiveColor)
+                    color: workspaceDisplay.workspaceIsFocused(workspace)
+                        ? bar.presetColor(preset.activeColor)
+                        : bar.presetColor(preset.inactiveColor)
                     font.family: Theme.fontFamily
                     font.pixelSize: preset.fontSize ?? 11
 
