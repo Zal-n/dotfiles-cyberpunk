@@ -54,6 +54,18 @@
     },
     "default-reverse": {
       "text": "\\\\"
+    },
+    "space-1": {
+      "text": " "
+    },
+    "space-2": {
+      "text": "  "
+    },
+    "space-3": {
+      "text": "  "
+    },
+    "space-4": {
+      "text": "    "
     }
   },
   "workspaceDisplay": {
