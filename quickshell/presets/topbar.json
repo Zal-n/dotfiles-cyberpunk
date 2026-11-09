@@ -73,7 +73,7 @@
       "style": "dots",
       "activeColor": "cyan",
       "inactiveColor": "fgDim",
-      "size": 7,
+      "size": 9,
       "spacing": 6
     },
     "rectangles": {
@@ -81,14 +81,15 @@
       "activeColor": "cyan",
       "inactiveColor": "fgDim",
       "width": 16,
-      "height": 5,
+      "height": 7,
       "spacing": 5
     },
     "numbers": {
       "style": "numbers",
       "activeColor": "cyan",
       "inactiveColor": "fgDim",
-      "spacing": 8
+      "spacing": 8,
+      "fontSize": 12
     }
   },
   "battery": {

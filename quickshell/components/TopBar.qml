@@ -197,6 +197,20 @@ PanelWindow {
                 onTriggered: workspaceProcess.running = true
             }
 
+            Process {
+                id: focusWorkspaceProcess
+                command: []
+            }
+
+            function focusWorkspace(workspace) {
+                var target = workspace.idx ?? workspace.id;
+                if (target === undefined || target === null || focusWorkspaceProcess.running) {
+                    return;
+                }
+                focusWorkspaceProcess.command = ["niri", "msg", "action", "focus-workspace", String(target)];
+                focusWorkspaceProcess.running = true;
+            }
+
             Repeater {
                 model: workspaceDisplay.workspaces
                 delegate: Loader {
@@ -228,6 +242,12 @@ PanelWindow {
                     height: width
                     radius: width / 2
                     color: workspace.is_focused ? bar.presetColor(preset.activeColor) : bar.presetColor(preset.inactiveColor)
+
+                    MouseArea {
+                        anchors.fill: parent
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: workspaceDisplay.focusWorkspace(parent.workspace)
+                    }
                 }
             }
 
@@ -239,6 +259,12 @@ PanelWindow {
                     width: preset.width ?? 16
                     height: preset.height ?? 5
                     color: workspace.is_focused ? bar.presetColor(preset.activeColor) : bar.presetColor(preset.inactiveColor)
+
+                    MouseArea {
+                        anchors.fill: parent
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: workspaceDisplay.focusWorkspace(parent.workspace)
+                    }
                 }
             }
 
@@ -250,7 +276,13 @@ PanelWindow {
                     text: workspace.idx ?? workspace.id ?? "?"
                     color: workspace.is_focused ? bar.presetColor(preset.activeColor) : bar.presetColor(preset.inactiveColor)
                     font.family: Theme.fontFamily
-                    font.pixelSize: 11
+                    font.pixelSize: preset.fontSize ?? 11
+
+                    MouseArea {
+                        anchors.fill: parent
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: workspaceDisplay.focusWorkspace(parent.workspace)
+                    }
                 }
             }
         }
