@@ -179,80 +179,6 @@ PanelWindow {
                         }
                     }
 
-                    Component {
-                        id: batteryModule
-                        Row {
-                            id: battery
-                            property var moduleConfig: ({})
-                            readonly property var preset: bar.modulePreset(moduleConfig)
-                            property int capacity: -1
-                            property string status: "Unknown"
-                            spacing: 4
-
-                            Process {
-                                id: batteryProcess
-                                command: [
-                                    "sh", "-c",
-                                    "device=${1:-BAT0}; " +
-                                    "printf '%s\\n' \"$(cat /sys/class/power_supply/$device/capacity 2>/dev/null || echo -1)\" " +
-                                    "\"$(cat /sys/class/power_supply/$device/status 2>/dev/null || echo Unknown)\"",
-                                    "battery", battery.moduleConfig.device ?? "BAT0"
-                                ]
-                                running: true
-                                stdout: StdioCollector {
-                                    onStreamFinished: {
-                                        var lines = text.trim().split(/\r?\n/);
-                                        var parsedCapacity = Number.parseInt(lines[0], 10);
-                                        battery.capacity = Number.isFinite(parsedCapacity) ? parsedCapacity : -1;
-                                        battery.status = lines[1] ?? "Unknown";
-                                    }
-                                }
-                                onRunningChanged: {
-                                    if (!running) {
-                                        batteryRefresh.restart();
-                                    }
-                                }
-                            }
-
-                            Timer {
-                                id: batteryRefresh
-                                interval: 30000
-                                repeat: true
-                                running: true
-                                onTriggered: batteryProcess.running = true
-                            }
-
-                            Text {
-                                readonly property var iconSet: battery.preset.icons ?? ({})
-                                readonly property string level: {
-                                    if (battery.capacity < 0) return "unknown";
-                                    if (battery.status === "Charging") return "charging";
-                                    if (battery.capacity >= 80) return "full";
-                                    if (battery.capacity >= 40) return "high";
-                                    if (battery.capacity >= 20) return "medium";
-                                    if (battery.capacity >= 10) return "low";
-                                    return "critical";
-                                }
-                                visible: battery.preset.showIcon !== false
-                                text: iconSet[level] ?? iconSet.unknown ?? "󰁹"
-                                color: battery.status === "Charging"
-                                    ? bar.presetColor(battery.preset.chargingColor)
-                                    : bar.presetColor(battery.preset.normalColor)
-                                font.family: Theme.fontFamily
-                                font.pixelSize: battery.preset.fontSize ?? 13
-                            }
-
-                            Text {
-                                visible: battery.preset.showPercentage !== false && battery.capacity >= 0
-                                text: battery.capacity + "%"
-                                color: battery.status === "Charging"
-                                    ? bar.presetColor(battery.preset.chargingColor)
-                                    : bar.presetColor(battery.preset.normalColor)
-                                font.family: Theme.fontFamily
-                                font.pixelSize: battery.preset.fontSize ?? 13
-                            }
-                        }
-                    }
                 }
                 onRunningChanged: {
                     if (!running) {
@@ -324,6 +250,81 @@ PanelWindow {
                     font.family: Theme.fontFamily
                     font.pixelSize: 11
                 }
+            }
+        }
+    }
+
+    Component {
+        id: batteryModule
+        Row {
+            id: battery
+            property var moduleConfig: ({})
+            readonly property var preset: bar.modulePreset(moduleConfig)
+            property int capacity: -1
+            property string status: "Unknown"
+            spacing: 4
+
+            Process {
+                id: batteryProcess
+                command: [
+                    "sh", "-c",
+                    "device=${1:-BAT0}; " +
+                    "printf '%s\\n' \"$(cat /sys/class/power_supply/$device/capacity 2>/dev/null || echo -1)\" " +
+                    "\"$(cat /sys/class/power_supply/$device/status 2>/dev/null || echo Unknown)\"",
+                    "battery", battery.moduleConfig.device ?? "BAT0"
+                ]
+                running: true
+                stdout: StdioCollector {
+                    onStreamFinished: {
+                        var lines = text.trim().split(/\r?\n/);
+                        var parsedCapacity = Number.parseInt(lines[0], 10);
+                        battery.capacity = Number.isFinite(parsedCapacity) ? parsedCapacity : -1;
+                        battery.status = lines[1] ?? "Unknown";
+                    }
+                }
+                onRunningChanged: {
+                    if (!running) {
+                        batteryRefresh.restart();
+                    }
+                }
+            }
+
+            Timer {
+                id: batteryRefresh
+                interval: 30000
+                repeat: true
+                running: true
+                onTriggered: batteryProcess.running = true
+            }
+
+            Text {
+                readonly property var iconSet: battery.preset.icons ?? ({})
+                readonly property string level: {
+                    if (battery.capacity < 0) return "unknown";
+                    if (battery.status === "Charging") return "charging";
+                    if (battery.capacity >= 80) return "full";
+                    if (battery.capacity >= 40) return "high";
+                    if (battery.capacity >= 20) return "medium";
+                    if (battery.capacity >= 10) return "low";
+                    return "critical";
+                }
+                visible: battery.preset.showIcon !== false
+                text: iconSet[level] ?? iconSet.unknown ?? "󰁹"
+                color: battery.status === "Charging"
+                    ? bar.presetColor(battery.preset.chargingColor)
+                    : bar.presetColor(battery.preset.normalColor)
+                font.family: Theme.fontFamily
+                font.pixelSize: battery.preset.fontSize ?? 13
+            }
+
+            Text {
+                visible: battery.preset.showPercentage !== false && battery.capacity >= 0
+                text: battery.capacity + "%"
+                color: battery.status === "Charging"
+                    ? bar.presetColor(battery.preset.chargingColor)
+                    : bar.presetColor(battery.preset.normalColor)
+                font.family: Theme.fontFamily
+                font.pixelSize: battery.preset.fontSize ?? 13
             }
         }
     }
