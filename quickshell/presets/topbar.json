@@ -1,0 +1,42 @@
+{
+  "logo": {
+    "sys-niri": {
+      "text": "SYS // NIRI"
+    },
+    "arch": {
+      "text": ""
+    },
+    "menu": {
+      "text": "☰"
+    }
+  },
+  "clock": {
+    "time": {
+      "timeFormat": "HH:mm",
+      "showDate": false
+    },
+    "time-seconds": {
+      "timeFormat": "HH:mm:ss",
+      "showDate": false
+    },
+    "time-date": {
+      "timeFormat": "HH:mm",
+      "showDate": true
+    }
+  },
+  "settings": {
+    "default": {
+      "text": "⚙"
+    }
+  },
+  "controlCenter": {
+    "default": {
+      "text": "CTRL"
+    }
+  },
+  "separator": {
+    "default": {
+      "text": "//"
+    }
+  }
+}

@@ -16,6 +16,18 @@
     "cornerCutSize": 25,
     "cornerCutSizeSmall": 15
   },
+  "topbar": {
+    "left": [
+      { "id": "logo", "preset": "sys-niri" }
+    ],
+    "center": [
+      { "id": "clock", "preset": "time-date" }
+    ],
+    "right": [
+      { "id": "settings", "preset": "default" },
+      { "id": "controlCenter", "preset": "default" }
+    ]
+  },
   "hardware": {
     "brightnessDevice": "intel_backlight",
     "audioSink": "@DEFAULT_AUDIO_SINK@"

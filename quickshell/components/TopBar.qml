@@ -9,9 +9,8 @@ PanelWindow {
     signal controlCenterToggled()
     signal settingsToggled()
 
-    readonly property var cfg: root.config;
-
-    readonly property bool isHovered: mouseArea.containsMouse
+    readonly property var cfg: root.config.topbar ?? ({})
+    readonly property var presets: root.topbarPresets
 
     WlrLayershell.layer: WlrLayer.Top
 
@@ -31,24 +30,93 @@ PanelWindow {
         color: Theme.cyan
     }
 
-    RowLayout {
+    Item {
         anchors.fill: parent
         anchors.leftMargin: 16
         anchors.rightMargin: 16
-        spacing: 12
 
+        RowLayout {
+            anchors.left: parent.left
+            anchors.verticalCenter: parent.verticalCenter
+            spacing: 12
+            Repeater {
+                model: bar.cfg.left ?? []
+                delegate: Loader {
+                    required property var modelData
+                    property var moduleConfig: modelData
+                    sourceComponent: bar.moduleComponent(modelData.id)
+                }
+            }
+        }
+
+        RowLayout {
+            anchors.centerIn: parent
+            spacing: 12
+            Repeater {
+                model: bar.cfg.center ?? []
+                delegate: Loader {
+                    required property var modelData
+                    property var moduleConfig: modelData
+                    sourceComponent: bar.moduleComponent(modelData.id)
+                }
+            }
+        }
+
+        RowLayout {
+            anchors.right: parent.right
+            anchors.verticalCenter: parent.verticalCenter
+            spacing: 8
+            Repeater {
+                model: bar.cfg.right ?? []
+                delegate: Loader {
+                    required property var modelData
+                    property var moduleConfig: modelData
+                    sourceComponent: bar.moduleComponent(modelData.id)
+                }
+            }
+        }
+    }
+
+    function modulePreset(module) {
+        return bar.presets[module.id]?.[module.preset ?? "default"] ?? ({});
+    }
+
+    function moduleComponent(moduleId) {
+        switch (moduleId) {
+        case "logo":
+            return logoModule;
+        case "clock":
+            return clockModule;
+        case "settings":
+            return settingsModule;
+        case "controlCenter":
+            return controlCenterModule;
+        case "separator":
+            return separatorModule;
+        default:
+            return null;
+        }
+    }
+
+    Component {
+        id: logoModule
         Text {
-            text: "SYS // NIRI"
+            required property var moduleConfig
+            readonly property var preset: bar.modulePreset(moduleConfig)
+            visible: moduleConfig.visible !== false
+            text: preset.text ?? ""
             color: Theme.cyan
             font.family: Theme.fontFamily
             font.bold: true
             font.pixelSize: 13
         }
+    }
 
-        Item { Layout.fillWidth: true }
-
+    Component {
+        id: clockModule
         Text {
-            id: clockText
+            required property var moduleConfig
+            readonly property var preset: bar.modulePreset(moduleConfig)
             color: Theme.yellow
             font.family: Theme.fontFamily
             font.bold: true
@@ -61,74 +129,74 @@ PanelWindow {
                 triggeredOnStart: true
                 onTriggered: {
                     var d = new Date();
-                    clockText.text = d.toLocaleTimeString(Qt.locale(), "hh:mm:ss") + " | " + d.toISOString().split('T')[0];
+                    var value = d.toLocaleTimeString(Qt.locale(), parent.preset.timeFormat ?? "HH:mm");
+                    if (parent.preset.showDate === true) {
+                        value += " | " + d.toISOString().split('T')[0];
+                    }
+                    parent.text = value;
                 }
             }
         }
+    }
 
-        Item { Layout.fillWidth: true }
+    Component {
+        id: separatorModule
+        Text {
+            required property var moduleConfig
+            readonly property var preset: bar.modulePreset(moduleConfig)
+            text: preset.text ?? "//"
+            color: Theme.fgDim
+            font.family: Theme.fontFamily
+            font.bold: true
+        }
+    }
 
-        // Settings Gomb
+    Component {
+        id: settingsModule
         Rectangle {
-            Layout.preferredWidth: 30
-            Layout.preferredHeight: 26
+            required property var moduleConfig
+            readonly property var preset: bar.modulePreset(moduleConfig)
+            width: 30
+            height: 26
             color: Theme.surface
             border.color: Theme.cyan
             border.width: 1
 
             Text {
                 anchors.centerIn: parent
-                text: "⚙"
+                text: parent.preset.text ?? "⚙"
                 color: Theme.cyan
                 font.family: Theme.fontFamily
             }
-
             MouseArea {
                 anchors.fill: parent
                 onClicked: bar.settingsToggled()
             }
         }
+    }
 
-        // Control Center Gomb
+    Component {
+        id: controlCenterModule
         Rectangle {
-            Layout.preferredWidth: 100
-            Layout.preferredHeight: 26
+            required property var moduleConfig
+            readonly property var preset: bar.modulePreset(moduleConfig)
+            width: 100
+            height: 26
             color: Theme.surface
             border.color: Theme.magenta
             border.width: 1
 
-            RowLayout {
+            Text {
                 anchors.centerIn: parent
-                spacing: 6
-                Text { text: "CTRL"; color: Theme.fg; font.family: Theme.fontFamily; font.pixelSize: 11; font.bold: true }
+                text: parent.preset.text ?? "CTRL"
+                color: Theme.fg
+                font.family: Theme.fontFamily
+                font.pixelSize: 11
+                font.bold: true
             }
-
             MouseArea {
-                id: mouseArea
                 anchors.fill: parent
-                //onClicked: bar.controlCenterToggled()
-                hoverEnabled: true
-            }
-            Timer {
-                id: openTimer
-                interval: 200
-                repeat: false
-                onTriggered: {
-                    if (bar.isHovered) {
-                        cc.visible = true
-                    }
-                }
-            }
-
-            Timer {
-                id: closeTimer
-                interval: 150
-                repeat: false
-                onTriggered: {
-                    if (!bar.isHovered) {
-                        cc.visible = false
-                    }
-                }
+                onClicked: bar.controlCenterToggled()
             }
         }
     }

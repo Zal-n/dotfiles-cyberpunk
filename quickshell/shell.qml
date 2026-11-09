@@ -28,12 +28,25 @@ ShellRoot {
             "cornerCutSize": 25,
             "cornerCutSizeSmall": 15
         },
+        "topbar": {
+            "left": [
+                { "id": "logo", "preset": "sys-niri" }
+            ],
+            "center": [
+                { "id": "clock", "preset": "time-date" }
+            ],
+            "right": [
+                { "id": "settings", "preset": "default" },
+                { "id": "controlCenter", "preset": "default" }
+            ]
+        },
         "hardware": {
             "brightnessDevice": "intel_backlight",
             "audioSink": "@DEFAULT_AUDIO_SINK@"
         }
     })
     property var config: ({})
+    property var topbarPresets: ({})
 
     FileView {
       id: configFile
@@ -46,6 +59,17 @@ ShellRoot {
       onLoadFailed: root.createDefaultConfig(error)
       JsonAdapter {
       } 
+    }
+
+    FileView {
+      id: topbarPresetsFile
+      path: Qt.resolvedUrl(Quickshell.env("HOME") + "/.config/quickshell/presets/topbar.json")
+      blockLoading: true
+      watchChanges: true
+
+      onLoaded: root.loadTopbarPresets()
+      onFileChanged: topbarPresetsFile.reload()
+      onLoadFailed: console.log("TopBar presets load error: " + FileViewError.toString(error))
     }
 
     function loadJson() {
@@ -68,6 +92,19 @@ ShellRoot {
     function applyConfig(newConfig) {
       root.config = newConfig;
       Theme.rawConfig = newConfig;
+    }
+
+    function loadTopbarPresets() {
+      try {
+        var rawText = typeof topbarPresetsFile.text === "function" ? topbarPresetsFile.text() : topbarPresetsFile.text;
+        var parsed = JSON.parse(rawText);
+        if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+          throw new Error("TopBar presets root must be an object");
+        }
+        root.topbarPresets = parsed;
+      } catch (e) {
+        console.log("TopBar presets parse error: " + e);
+      }
     }
 
     function saveConfig(newConfig) {
