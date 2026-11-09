@@ -24,10 +24,14 @@
     },
     "time-seconds-date": {
       "timeFormat": "HH:mm:ss",
-      "showDate": false
+      "showDate": true
     },
     "time-date": {
       "timeFormat": "HH:mm",
+      "showDate": true
+    },
+    "date": {
+      "timeFormat": "",
       "showDate": true
     }
   },
@@ -44,6 +48,12 @@
   "separator": {
     "default": {
       "text": "//"
+    },
+    "pipes": {
+      "text": "||"
+    },
+    "default-reverse": {
+      "text": "\\"
     }
   }
 }
