@@ -14,12 +14,13 @@ PanelWindow {
     WlrLayershell.layer: WlrLayer.Overlay
 
     anchors { top: true; right: true }
-    margins.top: Theme.barHeight
+    margins.top: 0
     margins.right: 16
     visible: false
     implicitWidth: 340
     implicitHeight: 420
     color: "transparent"
+    exclusionMode: ExclusionMode.Ignore
 
 
     MouseArea {
