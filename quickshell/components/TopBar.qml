@@ -44,10 +44,8 @@ PanelWindow {
                 model: bar.cfg.left ?? []
                 delegate: Loader {
                     property var moduleConfig: modelData
-                    implicitWidth: item ? item.implicitWidth : 0
-                    implicitHeight: item ? item.implicitHeight : 0
-                    Layout.preferredWidth: implicitWidth
-                    Layout.preferredHeight: implicitHeight
+                    Layout.preferredWidth: item ? item.implicitWidth : 0
+                    Layout.preferredHeight: item ? item.implicitHeight : 0
                     sourceComponent: bar.moduleComponent(modelData.id)
                     onLoaded: {
                         item.topbar = bar;
@@ -64,10 +62,8 @@ PanelWindow {
                 model: bar.cfg.center ?? []
                 delegate: Loader {
                     property var moduleConfig: modelData
-                    implicitWidth: item ? item.implicitWidth : 0
-                    implicitHeight: item ? item.implicitHeight : 0
-                    Layout.preferredWidth: implicitWidth
-                    Layout.preferredHeight: implicitHeight
+                    Layout.preferredWidth: item ? item.implicitWidth : 0
+                    Layout.preferredHeight: item ? item.implicitHeight : 0
                     sourceComponent: bar.moduleComponent(modelData.id)
                     onLoaded: {
                         item.topbar = bar;
@@ -85,10 +81,8 @@ PanelWindow {
                 model: bar.cfg.right ?? []
                 delegate: Loader {
                     property var moduleConfig: modelData
-                    implicitWidth: item ? item.implicitWidth : 0
-                    implicitHeight: item ? item.implicitHeight : 0
-                    Layout.preferredWidth: implicitWidth
-                    Layout.preferredHeight: implicitHeight
+                    Layout.preferredWidth: item ? item.implicitWidth : 0
+                    Layout.preferredHeight: item ? item.implicitHeight : 0
                     sourceComponent: bar.moduleComponent(modelData.id)
                     onLoaded: {
                         item.topbar = bar;
