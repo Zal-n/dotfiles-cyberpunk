@@ -107,7 +107,7 @@ Item {
         WlrLayershell.layer: WlrLayer.Overlay
         anchors.top: true
         anchors.right: true
-        margins.top: Theme.barHeight + 16
+        margins.top: Theme.barHeight + 24
         margins.right: 16
         implicitWidth: 260
         implicitHeight: battery.popupHeight
