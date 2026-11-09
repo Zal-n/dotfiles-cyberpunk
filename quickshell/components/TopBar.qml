@@ -115,6 +115,12 @@ PanelWindow {
         module.popupOpen = shouldOpen;
     }
 
+    function closePopups() {
+        Object.keys(bar.popupModules).forEach(function(key) {
+            bar.popupModules[key].popupOpen = false;
+        });
+    }
+
     function moduleWidth(module) {
         return module.width > 0 ? module.width : module.implicitWidth;
     }

@@ -141,8 +141,8 @@ ShellRoot {
     IpcHandler {
       target: "shell"
 
-      function toggleControlCenter() { root.controlCenterOpen = !root.controlCenterOpen; }
-      function openControlCenter() { root.controlCenterOpen = true; }
+      function toggleControlCenter() { topbar.closePopups(); root.controlCenterOpen = !root.controlCenterOpen; }
+      function openControlCenter() { topbar.closePopups(); root.controlCenterOpen = true; }
       function closeControlCenter() { root.controlCenterOpen = false; }
 
       function toggleLauncher() { root.launcherOpen = !root.launcherOpen; }
@@ -181,7 +181,11 @@ ShellRoot {
     }
 
     TopBar {
-      onControlCenterToggled: root.controlCenterOpen = !root.controlCenterOpen
+      id: topbar
+      onControlCenterToggled: {
+        topbar.closePopups();
+        root.controlCenterOpen = !root.controlCenterOpen;
+      }
       onSettingsToggled: root.settingsOpen = !root.settingsOpen
     }
 

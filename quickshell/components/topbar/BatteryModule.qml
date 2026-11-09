@@ -13,6 +13,7 @@ Item {
     property string status: "Unknown"
     property bool popupOpen: false
     readonly property string popupKey: "battery"
+    readonly property int popupHeight: 100
     readonly property bool isCharging: status.trim().toLowerCase() === "charging"
     width: batteryContent.implicitWidth
     height: batteryContent.implicitHeight
@@ -109,7 +110,7 @@ Item {
         margins.top: Theme.barHeight + 8
         margins.right: 16
         implicitWidth: 260
-        implicitHeight: 100
+        implicitHeight: battery.popupHeight
         color: "transparent"
         exclusionMode: ExclusionMode.Ignore
 

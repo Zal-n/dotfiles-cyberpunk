@@ -14,6 +14,7 @@ Item {
     property int signal: 0
     property bool popupOpen: false
     readonly property string popupKey: "wifi"
+    readonly property int popupHeight: 100
     width: wifiIcon.width
     height: wifiIcon.height
 
@@ -85,7 +86,7 @@ Item {
         margins.top: Theme.barHeight + 8
         margins.right: 16
         implicitWidth: 260
-        implicitHeight: 100
+        implicitHeight: wifi.popupHeight
         color: "transparent"
 
         Item {
