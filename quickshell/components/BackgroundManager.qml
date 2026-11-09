@@ -5,7 +5,7 @@ import ".."
 
 PanelWindow {
     id: bgWindow
-    property string wallpaperPath: ""
+    property string wallpaperPath: root.config.desktop.wallpaper
 
     WlrLayershell.layer: WlrLayer.Background
 

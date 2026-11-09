@@ -1,0 +1,22 @@
+{
+  "theme": {
+    "bg": "#0a0b10",
+    "surface": "#121520",
+    "surfaceAccent": "#1a1e2d",
+    "cyan": "#00f0ff",
+    "magenta": "#ff0055",
+    "yellow": "#ffe600",
+    "fg": "#e0e6ed",
+    "fgDim": "#565f89",
+    "fontFamily": "JetBrainsMono Nerd Font"
+  },
+  "desktop": {
+    "wallpaper": "/home/katon/Pictures/Wallpaper/acer-laptop-stock-5120x2880-14305.jpg",
+    "barHeight": 38,
+    "cornerCutSize": 25
+  },
+  "hardware": {
+    "brightnessDevice": "intel_backlight",
+    "audioSink": "@DEFAULT_AUDIO_SINK@"
+  }
+}

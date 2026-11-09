@@ -9,7 +9,9 @@ PanelWindow {
     signal controlCenterToggled()
     signal settingsToggled()
 
-    readonly property bool isHovered: mouseArea.containsMouse || cc.mouseArea.containsMouse
+    readonly property var cfg: root.config;
+
+    readonly property bool isHovered: mouseArea.containsMouse
 
     WlrLayershell.layer: WlrLayer.Top
 
@@ -18,7 +20,7 @@ PanelWindow {
         left: true
         right: true
     }
-    implicitHeight: 38
+    implicitHeight: Theme.barHeight
     color: Theme.bg
 
     Rectangle {

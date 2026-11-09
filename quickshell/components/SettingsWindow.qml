@@ -9,6 +9,8 @@ PanelWindow {
     id: settingsWin
     signal closeRequested()
 
+    property var cfg: root.config
+
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
 
@@ -144,7 +146,7 @@ PanelWindow {
                                 id: wpInput
                                 anchors.fill: parent
                                 anchors.margins: 8
-                                text: "/home/zaln/Pictures/cyberpunk.png"
+                                text: Theme.wallpaper
                                 color: Theme.fg
                                 font.family: Theme.fontFamily
                             }
@@ -163,7 +165,7 @@ PanelWindow {
                             MouseArea {
                                 anchors.fill: parent
                                 onClicked: {
-                                    root.currentWallpaper = wpInput.text;
+                                    root.config.desktop.wallpaper = wpInput.text;
                                 }
                             }
                         }
