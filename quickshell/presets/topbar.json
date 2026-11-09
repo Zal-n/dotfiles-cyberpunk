@@ -1,13 +1,16 @@
 {
   "logo": {
     "sys-niri": {
-      "text": "SYS // NIRI"
+      "text": "SYS // NIRI",
+      "fontSize": 13
     },
     "arch": {
-      "text": ""
+      "text": "",
+      "fontSize": 20
     },
     "menu": {
-      "text": "☰"
+      "text": "☰",
+      "fontSize": 20
     }
   },
   "clock": {
@@ -16,6 +19,10 @@
       "showDate": false
     },
     "time-seconds": {
+      "timeFormat": "HH:mm:ss",
+      "showDate": false
+    },
+    "time-seconds-date": {
       "timeFormat": "HH:mm:ss",
       "showDate": false
     },

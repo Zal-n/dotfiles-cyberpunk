@@ -108,7 +108,7 @@ PanelWindow {
             color: Theme.cyan
             font.family: Theme.fontFamily
             font.bold: true
-            font.pixelSize: 13
+            font.pixelSize: preset.fontSize ?? 13
         }
     }
 
@@ -167,6 +167,7 @@ PanelWindow {
                 text: parent.preset.text ?? "⚙"
                 color: Theme.cyan
                 font.family: Theme.fontFamily
+                font.pixelSize: 20
             }
             MouseArea {
                 anchors.fill: parent
