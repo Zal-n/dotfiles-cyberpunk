@@ -262,6 +262,7 @@ PanelWindow {
             readonly property var preset: bar.modulePreset(moduleConfig)
             property int capacity: -1
             property string status: "Unknown"
+            readonly property bool isCharging: status.trim().toLowerCase() === "charging"
             spacing: 4
 
             Process {
@@ -279,7 +280,8 @@ PanelWindow {
                         var lines = text.trim().split(/\r?\n/);
                         var parsedCapacity = Number.parseInt(lines[0], 10);
                         battery.capacity = Number.isFinite(parsedCapacity) ? parsedCapacity : -1;
-                        battery.status = lines[1] ?? "Unknown";
+                        battery.status = (lines[1] ?? "Unknown").trim();
+                        batteryRefresh.restart();
                     }
                 }
                 onRunningChanged: {
@@ -291,17 +293,21 @@ PanelWindow {
 
             Timer {
                 id: batteryRefresh
-                interval: 30000
+                interval: battery.preset.refreshInterval ?? 5000
                 repeat: true
                 running: true
-                onTriggered: batteryProcess.running = true
+                onTriggered: {
+                    if (!batteryProcess.running) {
+                        batteryProcess.running = true;
+                    }
+                }
             }
 
             Text {
                 readonly property var iconSet: battery.preset.icons ?? ({})
                 readonly property string level: {
                     if (battery.capacity < 0) return "unknown";
-                    if (battery.status === "Charging") return "charging";
+                    if (battery.isCharging) return "charging";
                     if (battery.capacity >= 80) return "full";
                     if (battery.capacity >= 40) return "high";
                     if (battery.capacity >= 20) return "medium";
@@ -310,7 +316,7 @@ PanelWindow {
                 }
                 visible: battery.preset.style === "icon-label" && battery.preset.showIcon !== false
                 text: iconSet[level] ?? iconSet.unknown ?? "󰁹"
-                color: battery.status === "Charging"
+                color: battery.isCharging
                     ? bar.presetColor(battery.preset.chargingColor)
                     : bar.presetColor(battery.preset.normalColor)
                 font.family: Theme.fontFamily
@@ -324,7 +330,7 @@ PanelWindow {
                     var format = battery.preset.format ?? "{percentage}%";
                     return format.replace("{percentage}", percentage);
                 }
-                color: battery.status === "Charging"
+                color: battery.isCharging
                     ? bar.presetColor(battery.preset.chargingColor)
                     : bar.presetColor(battery.preset.normalColor)
                 font.family: Theme.fontFamily

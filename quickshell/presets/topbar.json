@@ -85,9 +85,10 @@
       "format": "PWR // {percentage}%",
       "showIcon": false,
       "showPercentage": true,
-      "chargingColor": "cyan",
-      "normalColor": "fg",
+      "chargingColor": "yellow",
+      "normalColor": "cyan",
       "fontSize": 13,
+      "refreshInterval": 5000,
       "icons": {
         "charging": "󰂄",
         "full": "󰁹",
