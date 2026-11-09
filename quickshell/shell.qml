@@ -25,7 +25,6 @@ ShellRoot {
         "desktop": {
             "wallpaper": "",
             "barHeight": 38,
-            "popupTopMargin": 46,
             "cornerCutSize": 25,
             "cornerCutSizeSmall": 15
         },

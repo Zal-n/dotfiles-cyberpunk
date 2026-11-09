@@ -16,7 +16,6 @@ QtObject {
   readonly property string fontFamily: rawConfig.theme?.fontFamily ?? "JetBrainsMono Nerd Font"
 
   readonly property int barHeight: rawConfig.desktop?.barHeight ?? 38
-  readonly property int popupTopMargin: rawConfig.desktop?.popupTopMargin ?? 46
   readonly property int cornerCutSize: rawConfig.desktop?.cornerCutSize ?? 25
   readonly property int cornerCutSizeSmall: rawConfig.desktop?.cornerCutSizeSmall ?? 15
   readonly property string wallpaper: rawConfig.desktop?.wallpaper ? rawConfig.desktop.wallpaper : ""
