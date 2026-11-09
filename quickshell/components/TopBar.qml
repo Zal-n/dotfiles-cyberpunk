@@ -43,10 +43,12 @@ PanelWindow {
                 model: bar.cfg.left ?? []
                 delegate: Loader {
                     property var moduleConfig: modelData
-                    source: bar.moduleSource(modelData.id)
-                    onLoaded: {
-                        item.topbar = bar;
-                        item.moduleConfig = moduleConfig;
+                    source: Qt.resolvedUrl("./" + bar.moduleSource(modelData.id))
+                    onStatusChanged: {
+                        if (status === Loader.Ready) {
+                            item.topbar = bar;
+                            item.moduleConfig = moduleConfig;
+                        }
                     }
                 }
             }
@@ -59,10 +61,12 @@ PanelWindow {
                 model: bar.cfg.center ?? []
                 delegate: Loader {
                     property var moduleConfig: modelData
-                    source: bar.moduleSource(modelData.id)
-                    onLoaded: {
-                        item.topbar = bar;
-                        item.moduleConfig = moduleConfig;
+                    source: Qt.resolvedUrl("./" + bar.moduleSource(modelData.id))
+                    onStatusChanged: {
+                        if (status === Loader.Ready) {
+                            item.topbar = bar;
+                            item.moduleConfig = moduleConfig;
+                        }
                     }
                 }
             }
@@ -76,10 +80,12 @@ PanelWindow {
                 model: bar.cfg.right ?? []
                 delegate: Loader {
                     property var moduleConfig: modelData
-                    source: bar.moduleSource(modelData.id)
-                    onLoaded: {
-                        item.topbar = bar;
-                        item.moduleConfig = moduleConfig;
+                    source: Qt.resolvedUrl("./" + bar.moduleSource(modelData.id))
+                    onStatusChanged: {
+                        if (status === Loader.Ready) {
+                            item.topbar = bar;
+                            item.moduleConfig = moduleConfig;
+                        }
                     }
                 }
             }
