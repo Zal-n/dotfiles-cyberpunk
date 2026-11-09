@@ -435,11 +435,11 @@ PanelWindow {
                             var cut = Theme.cornerCutSize;
                             ctx.clearRect(0, 0, width, height);
                             ctx.beginPath();
-                            ctx.moveTo(cut, 0);
+                            ctx.moveTo(0, 0);
                             ctx.lineTo(width, 0);
                             ctx.lineTo(width, height);
-                            ctx.lineTo(0, height);
-                            ctx.lineTo(0, cut);
+                            ctx.lineTo(cut, height);
+                            ctx.lineTo(0, height - cut);
                             ctx.closePath();
                             ctx.fillStyle = Theme.bg;
                             ctx.fill();
