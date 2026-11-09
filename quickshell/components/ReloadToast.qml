@@ -19,6 +19,7 @@ PanelWindow {
     margins.bottom: 24
     implicitHeight: 58
     color: "transparent"
+    exclusionMode: ExclusionMode.Ignore
     visible: message.length > 0
 
     function showToast(nextMessage, isFailure) {

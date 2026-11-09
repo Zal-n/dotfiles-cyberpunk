@@ -356,14 +356,25 @@ PanelWindow {
 
             Process {
                 id: wifiProcess
-                command: ["sh", "-c", "nmcli -t -f ACTIVE,SSID,SIGNAL dev wifi 2>/dev/null | awk -F: '$1 == \"yes\" { print $2 \"\\n\" $3; exit }'"]
+                command: [
+                    "sh", "-c",
+                    "device=$(nmcli -t -f DEVICE,TYPE,STATE device 2>/dev/null | " +
+                    "awk -F: '$2 == \"wifi\" && $3 == \"connected\" { print $1; exit }'); " +
+                    "if [ -z \"$device\" ]; then exit 0; fi; " +
+                    "nmcli -t -f GENERAL.CONNECTION device show \"$device\" 2>/dev/null | " +
+                    "sed -n 's/^GENERAL.CONNECTION://p'; " +
+                    "nmcli -t -f IN-USE,SIGNAL dev wifi 2>/dev/null | " +
+                    "awk -F: '$1 == \"*\" { print $2; exit }'"
+                ]
                 running: true
                 stdout: StdioCollector {
                     onStreamFinished: {
                         var lines = text.trim().split(/\r?\n/);
-                        wifi.connected = lines.length >= 2 && lines[0].length > 0;
+                        wifi.connected = lines.length >= 1 && lines[0].length > 0;
                         wifi.ssid = wifi.connected ? lines[0] : "";
-                        wifi.signal = wifi.connected ? Number.parseInt(lines[1], 10) || 0 : 0;
+                        wifi.signal = wifi.connected && lines.length >= 2
+                            ? Number.parseInt(lines[1], 10) || 0
+                            : 0;
                     }
                 }
                 onRunningChanged: {
@@ -412,13 +423,31 @@ PanelWindow {
                 margins.right: 16
                 implicitWidth: 260
                 implicitHeight: 100
-                color: Theme.bg
+                color: "transparent"
 
-                Rectangle {
+                Item {
                     anchors.fill: parent
-                    color: Theme.bg
-                    border.color: Theme.cyan
-                    border.width: 1
+
+                    Canvas {
+                        anchors.fill: parent
+                        onPaint: {
+                            var ctx = getContext("2d");
+                            var cut = Theme.cornerCutSize;
+                            ctx.clearRect(0, 0, width, height);
+                            ctx.beginPath();
+                            ctx.moveTo(cut, 0);
+                            ctx.lineTo(width, 0);
+                            ctx.lineTo(width, height);
+                            ctx.lineTo(0, height);
+                            ctx.lineTo(0, cut);
+                            ctx.closePath();
+                            ctx.fillStyle = Theme.bg;
+                            ctx.fill();
+                            ctx.lineWidth = 1;
+                            ctx.strokeStyle = Theme.cyan;
+                            ctx.stroke();
+                        }
+                    }
 
                     Column {
                         anchors.fill: parent
