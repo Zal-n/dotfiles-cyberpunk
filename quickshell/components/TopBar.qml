@@ -179,26 +179,49 @@ PanelWindow {
                     onStreamFinished: {
                         try {
                             var parsed = JSON.parse(text);
-                            workspaceDisplay.workspaces = Array.isArray(parsed) ? parsed : [];
+                            if (!Array.isArray(parsed)) {
+                                workspaceDisplay.workspaces = [];
+                            } else {
+                                parsed.sort(function(left, right) {
+                                    return Number(left.idx ?? left.id ?? 0) - Number(right.idx ?? right.id ?? 0);
+                                });
+                                workspaceDisplay.workspaces = parsed;
+                            }
                         } catch (e) {
                             workspaceDisplay.workspaces = [];
                         }
                     }
-
-                }
-                onRunningChanged: {
-                    if (!running) {
-                        refreshTimer.restart();
-                    }
                 }
             }
 
-            Timer {
-                id: refreshTimer
-                interval: 1000
-                repeat: true
+            Process {
+                id: workspaceEvents
+                command: ["niri", "msg", "event-stream"]
                 running: true
-                onTriggered: workspaceProcess.running = true
+                stdout: SplitParser {
+                    splitMarker: "\n"
+                    onRead: function(data) {
+                        var event;
+                        try {
+                            event = JSON.parse(data);
+                        } catch (e) {
+                            return;
+                        }
+
+                        var eventNames = Object.keys(event);
+                        var workspaceEvent = eventNames.some(function(name) {
+                            return name.indexOf("Workspace") !== -1;
+                        });
+                        if (workspaceEvent && !workspaceProcess.running) {
+                            workspaceProcess.running = true;
+                        }
+                    }
+                }
+                onRunningChanged: {
+                    if (!running) {
+                        running = true;
+                    }
+                }
             }
 
             Process {
