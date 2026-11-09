@@ -3,6 +3,7 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Wayland
 import ".."
+import "topbar"
 
 PanelWindow {
     id: bar
@@ -43,12 +44,14 @@ PanelWindow {
                 model: bar.cfg.left ?? []
                 delegate: Loader {
                     property var moduleConfig: modelData
-                    source: Qt.resolvedUrl("./" + bar.moduleSource(modelData.id))
-                    onStatusChanged: {
-                        if (status === Loader.Ready) {
-                            item.topbar = bar;
-                            item.moduleConfig = moduleConfig;
-                        }
+                    implicitWidth: item ? item.implicitWidth : 0
+                    implicitHeight: item ? item.implicitHeight : 0
+                    Layout.preferredWidth: implicitWidth
+                    Layout.preferredHeight: implicitHeight
+                    sourceComponent: bar.moduleComponent(modelData.id)
+                    onLoaded: {
+                        item.topbar = bar;
+                        item.moduleConfig = moduleConfig;
                     }
                 }
             }
@@ -61,12 +64,14 @@ PanelWindow {
                 model: bar.cfg.center ?? []
                 delegate: Loader {
                     property var moduleConfig: modelData
-                    source: Qt.resolvedUrl("./" + bar.moduleSource(modelData.id))
-                    onStatusChanged: {
-                        if (status === Loader.Ready) {
-                            item.topbar = bar;
-                            item.moduleConfig = moduleConfig;
-                        }
+                    implicitWidth: item ? item.implicitWidth : 0
+                    implicitHeight: item ? item.implicitHeight : 0
+                    Layout.preferredWidth: implicitWidth
+                    Layout.preferredHeight: implicitHeight
+                    sourceComponent: bar.moduleComponent(modelData.id)
+                    onLoaded: {
+                        item.topbar = bar;
+                        item.moduleConfig = moduleConfig;
                     }
                 }
             }
@@ -80,12 +85,14 @@ PanelWindow {
                 model: bar.cfg.right ?? []
                 delegate: Loader {
                     property var moduleConfig: modelData
-                    source: Qt.resolvedUrl("./" + bar.moduleSource(modelData.id))
-                    onStatusChanged: {
-                        if (status === Loader.Ready) {
-                            item.topbar = bar;
-                            item.moduleConfig = moduleConfig;
-                        }
+                    implicitWidth: item ? item.implicitWidth : 0
+                    implicitHeight: item ? item.implicitHeight : 0
+                    Layout.preferredWidth: implicitWidth
+                    Layout.preferredHeight: implicitHeight
+                    sourceComponent: bar.moduleComponent(modelData.id)
+                    onLoaded: {
+                        item.topbar = bar;
+                        item.moduleConfig = moduleConfig;
                     }
                 }
             }
@@ -96,26 +103,26 @@ PanelWindow {
         return bar.presets[module.id]?.[module.preset ?? "default"] ?? ({});
     }
 
-    function moduleSource(moduleId) {
+    function moduleComponent(moduleId) {
         switch (moduleId) {
         case "logo":
-            return "topbar/LogoModule.qml";
+            return logoModule;
         case "clock":
-            return "topbar/ClockModule.qml";
+            return clockModule;
         case "settings":
-            return "topbar/SettingsModule.qml";
+            return settingsModule;
         case "controlCenter":
-            return "topbar/ControlCenterModule.qml";
+            return controlCenterModule;
         case "separator":
-            return "topbar/SeparatorModule.qml";
+            return separatorModule;
         case "workspaceDisplay":
-            return "topbar/WorkspaceDisplay.qml";
+            return workspaceDisplayModule;
         case "battery":
-            return "topbar/BatteryModule.qml";
+            return batteryModule;
         case "wifi":
-            return "topbar/WifiModule.qml";
+            return wifiModule;
         default:
-            return "";
+            return null;
         }
     }
 
@@ -132,5 +139,45 @@ PanelWindow {
         default:
             return Theme.fgDim;
         }
+    }
+
+    Component {
+        id: logoModule
+        LogoModule {}
+    }
+
+    Component {
+        id: clockModule
+        ClockModule {}
+    }
+
+    Component {
+        id: separatorModule
+        SeparatorModule {}
+    }
+
+    Component {
+        id: workspaceDisplayModule
+        WorkspaceDisplay {}
+    }
+
+    Component {
+        id: batteryModule
+        BatteryModule {}
+    }
+
+    Component {
+        id: wifiModule
+        WifiModule {}
+    }
+
+    Component {
+        id: settingsModule
+        SettingsModule {}
+    }
+
+    Component {
+        id: controlCenterModule
+        ControlCenterModule {}
     }
 }

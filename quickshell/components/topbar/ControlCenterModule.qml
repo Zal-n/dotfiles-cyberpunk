@@ -1,5 +1,5 @@
 import QtQuick
-import ".."
+import "../.."
 
 Rectangle {
     property var topbar
@@ -15,7 +15,7 @@ Rectangle {
     Text {
         anchors.centerIn: parent
         text: parent.preset.text ?? "CTRL"
-        color: Theme.fg
+        color: Theme.magenta
         font.family: Theme.fontFamily
         font.pixelSize: 11
         font.bold: true
