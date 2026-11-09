@@ -4,6 +4,7 @@ import QtQuick.Controls
 import Quickshell
 import Quickshell.Wayland
 import ".."
+import "../.."
 
 PanelWindow {
     id: cc

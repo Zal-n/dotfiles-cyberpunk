@@ -199,7 +199,7 @@ ShellRoot {
       wifi: topbar.wifiModule
     }
 
-    ControlCenter {
+    ControlCenterPopup {
       visible: root.controlCenterOpen
       onCloseRequested: root.controlCenterOpen = false
       onOpenSettingsRequested: {
