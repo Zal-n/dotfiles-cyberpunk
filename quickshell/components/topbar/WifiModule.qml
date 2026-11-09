@@ -83,7 +83,7 @@ Item {
         WlrLayershell.layer: WlrLayer.Overlay
         anchors.top: true
         anchors.right: true
-        margins.top: Theme.barHeight + 8
+        margins.top: Theme.popupTopMargin
         margins.right: 16
         implicitWidth: 260
         implicitHeight: wifi.popupHeight

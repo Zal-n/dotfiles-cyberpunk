@@ -9,6 +9,7 @@ PanelWindow {
     id: bar
     signal controlCenterToggled()
     signal settingsToggled()
+    signal popupOpened()
 
     readonly property var cfg: root.config.topbar ?? ({})
     readonly property var presets: root.topbarPresets
@@ -113,6 +114,9 @@ PanelWindow {
             bar.popupModules[key].popupOpen = false;
         });
         module.popupOpen = shouldOpen;
+        if (shouldOpen) {
+            bar.popupOpened();
+        }
     }
 
     function closePopups() {

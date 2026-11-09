@@ -25,6 +25,7 @@ ShellRoot {
         "desktop": {
             "wallpaper": "",
             "barHeight": 38,
+            "popupTopMargin": 46,
             "cornerCutSize": 25,
             "cornerCutSizeSmall": 15
         },
@@ -186,6 +187,7 @@ ShellRoot {
         topbar.closePopups();
         root.controlCenterOpen = !root.controlCenterOpen;
       }
+      onPopupOpened: root.controlCenterOpen = false
       onSettingsToggled: root.settingsOpen = !root.settingsOpen
     }
 

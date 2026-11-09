@@ -13,7 +13,7 @@ PanelWindow {
     WlrLayershell.layer: WlrLayer.Overlay
 
     anchors { top: true; right: true }
-    margins.top: Theme.barHeight + 8
+    margins.top: Theme.popupTopMargin
     margins.right: 16
     visible: false
     implicitWidth: 340
