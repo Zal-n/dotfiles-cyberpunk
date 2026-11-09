@@ -38,6 +38,7 @@ ShellRoot {
             ],
             "right": [
                 { "id": "battery", "preset": "status-label", "device": "BAT0" },
+                { "id": "wifi", "preset": "icon-signal" },
                 { "id": "settings", "preset": "default" },
                 { "id": "controlCenter", "preset": "default" }
             ]

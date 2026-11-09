@@ -98,6 +98,8 @@ PanelWindow {
             return workspaceDisplayModule;
         case "battery":
             return batteryModule;
+        case "wifi":
+            return wifiModule;
         default:
             return null;
         }
@@ -335,6 +337,120 @@ PanelWindow {
                     : bar.presetColor(battery.preset.normalColor)
                 font.family: Theme.fontFamily
                 font.pixelSize: battery.preset.fontSize ?? 13
+            }
+        }
+    }
+
+    Component {
+        id: wifiModule
+        Item {
+            id: wifi
+            property var moduleConfig: ({})
+            readonly property var preset: bar.modulePreset(moduleConfig)
+            property bool connected: false
+            property string ssid: ""
+            property int signal: 0
+            property bool popupOpen: false
+            width: wifiIcon.width
+            height: wifiIcon.height
+
+            Process {
+                id: wifiProcess
+                command: ["sh", "-c", "nmcli -t -f ACTIVE,SSID,SIGNAL dev wifi 2>/dev/null | awk -F: '$1 == \"yes\" { print $2 \"\\n\" $3; exit }'"]
+                running: true
+                stdout: StdioCollector {
+                    onStreamFinished: {
+                        var lines = text.trim().split(/\r?\n/);
+                        wifi.connected = lines.length >= 2 && lines[0].length > 0;
+                        wifi.ssid = wifi.connected ? lines[0] : "";
+                        wifi.signal = wifi.connected ? Number.parseInt(lines[1], 10) || 0 : 0;
+                    }
+                }
+                onRunningChanged: {
+                    if (!running) {
+                        wifiRefresh.restart();
+                    }
+                }
+            }
+
+            Timer {
+                id: wifiRefresh
+                interval: 5000
+                repeat: true
+                running: true
+                onTriggered: {
+                    if (!wifiProcess.running) {
+                        wifiProcess.running = true;
+                    }
+                }
+            }
+
+            Text {
+                id: wifiIcon
+                text: wifi.connected
+                    ? (wifi.preset.icons?.connected ?? "󰤨")
+                    : (wifi.preset.icons?.disconnected ?? "󰤭")
+                color: wifi.connected
+                    ? bar.presetColor(wifi.preset.connectedColor)
+                    : bar.presetColor(wifi.preset.disconnectedColor)
+                font.family: Theme.fontFamily
+                font.pixelSize: wifi.preset.fontSize ?? 16
+
+                MouseArea {
+                    anchors.fill: parent
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: wifi.popupOpen = !wifi.popupOpen
+                }
+            }
+
+            PanelWindow {
+                visible: wifi.popupOpen
+                WlrLayershell.layer: WlrLayer.Overlay
+                anchors.top: true
+                anchors.right: true
+                margins.top: Theme.barHeight + 8
+                margins.right: 16
+                implicitWidth: 260
+                implicitHeight: 100
+                color: Theme.bg
+
+                Rectangle {
+                    anchors.fill: parent
+                    color: Theme.bg
+                    border.color: Theme.cyan
+                    border.width: 1
+
+                    Column {
+                        anchors.fill: parent
+                        anchors.margins: 12
+                        spacing: 6
+
+                        Text {
+                            text: wifi.connected ? "WIFI // CONNECTED" : "WIFI // OFFLINE"
+                            color: wifi.connected ? Theme.cyan : Theme.magenta
+                            font.family: Theme.fontFamily
+                            font.bold: true
+                        }
+                        Text {
+                            text: wifi.connected
+                                ? wifi.ssid + " // " + wifi.signal + "%"
+                                : "NO ACTIVE NETWORK"
+                            color: Theme.fg
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 11
+                        }
+                        Text {
+                            text: "NETWORK CONTROLS // SOON"
+                            color: Theme.fgDim
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 10
+                        }
+                    }
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: wifi.popupOpen = false
+                    }
+                }
             }
         }
     }
