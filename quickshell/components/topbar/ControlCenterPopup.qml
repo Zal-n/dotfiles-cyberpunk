@@ -15,7 +15,7 @@ PanelWindow {
 
     anchors { top: true; right: true }
     margins.top: Theme.barHeight
-    margins.right: 16
+    margins.right: 0
     visible: false
     implicitWidth: 340
     implicitHeight: 420

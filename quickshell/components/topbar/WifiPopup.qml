@@ -12,7 +12,7 @@ PanelWindow {
     anchors.top: true
     anchors.right: true
     margins.top: Theme.barHeight
-    margins.right: 16
+    margins.right: 0
     implicitWidth: 260
     implicitHeight: 100
     color: "transparent"
