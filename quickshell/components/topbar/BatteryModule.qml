@@ -4,7 +4,7 @@ import Quickshell.Io
 import Quickshell.Wayland
 import "../.."
 
-Row {
+Item {
     id: battery
     property var topbar
     property var moduleConfig: ({})
@@ -13,7 +13,8 @@ Row {
     property string status: "Unknown"
     property bool popupOpen: false
     readonly property bool isCharging: status.trim().toLowerCase() === "charging"
-    spacing: 4
+    width: batteryContent.implicitWidth
+    height: batteryContent.implicitHeight
 
     Process {
         id: batteryProcess
@@ -53,42 +54,48 @@ Row {
         }
     }
 
-    Text {
-        readonly property var iconSet: battery.preset.icons ?? ({})
-        readonly property string level: {
-            if (battery.capacity < 0) return "unknown";
-            if (battery.isCharging) return "charging";
-            if (battery.capacity >= 80) return "full";
-            if (battery.capacity >= 40) return "high";
-            if (battery.capacity >= 20) return "medium";
-            if (battery.capacity >= 10) return "low";
-            return "critical";
-        }
-        visible: battery.preset.style === "icon-label" && battery.preset.showIcon !== false
-        text: iconSet[level] ?? iconSet.unknown ?? "󰁹"
-        color: battery.isCharging
-            ? battery.topbar.presetColor(battery.preset.chargingColor)
-            : battery.topbar.presetColor(battery.preset.normalColor)
-        font.family: Theme.fontFamily
-        font.pixelSize: battery.preset.fontSize ?? 13
-    }
+    Row {
+        id: batteryContent
+        spacing: 4
 
-    Text {
-        visible: battery.capacity >= 0
-        text: {
-            var percentage = battery.capacity;
-            var format = battery.preset.format ?? "{percentage}%";
-            return format.replace("{percentage}", percentage);
+        Text {
+            readonly property var iconSet: battery.preset.icons ?? ({})
+            readonly property string level: {
+                if (battery.capacity < 0) return "unknown";
+                if (battery.isCharging) return "charging";
+                if (battery.capacity >= 80) return "full";
+                if (battery.capacity >= 40) return "high";
+                if (battery.capacity >= 20) return "medium";
+                if (battery.capacity >= 10) return "low";
+                return "critical";
+            }
+            visible: battery.preset.style === "icon-label" && battery.preset.showIcon !== false
+            text: iconSet[level] ?? iconSet.unknown ?? "󰁹"
+            color: battery.isCharging
+                ? battery.topbar.presetColor(battery.preset.chargingColor)
+                : battery.topbar.presetColor(battery.preset.normalColor)
+            font.family: Theme.fontFamily
+            font.pixelSize: battery.preset.fontSize ?? 13
         }
-        color: battery.isCharging
-            ? battery.topbar.presetColor(battery.preset.chargingColor)
-            : battery.topbar.presetColor(battery.preset.normalColor)
-        font.family: Theme.fontFamily
-        font.pixelSize: battery.preset.fontSize ?? 13
+
+        Text {
+            visible: battery.capacity >= 0
+            text: {
+                var percentage = battery.capacity;
+                var format = battery.preset.format ?? "{percentage}%";
+                return format.replace("{percentage}", percentage);
+            }
+            color: battery.isCharging
+                ? battery.topbar.presetColor(battery.preset.chargingColor)
+                : battery.topbar.presetColor(battery.preset.normalColor)
+            font.family: Theme.fontFamily
+            font.pixelSize: battery.preset.fontSize ?? 13
+        }
+
     }
 
     MouseArea {
-        anchors.fill: parent
+        anchors.fill: batteryContent
         cursorShape: Qt.PointingHandCursor
         onClicked: battery.popupOpen = !battery.popupOpen
     }

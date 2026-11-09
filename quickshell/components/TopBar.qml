@@ -44,8 +44,8 @@ PanelWindow {
                 model: bar.cfg.left ?? []
                 delegate: Loader {
                     property var moduleConfig: modelData
-                    Layout.preferredWidth: item ? item.implicitWidth : 0
-                    Layout.preferredHeight: item ? item.implicitHeight : 0
+                    Layout.preferredWidth: item ? bar.moduleWidth(item) : 0
+                    Layout.preferredHeight: item ? bar.moduleHeight(item) : 0
                     sourceComponent: bar.moduleComponent(modelData.id)
                     onLoaded: {
                         item.topbar = bar;
@@ -62,8 +62,8 @@ PanelWindow {
                 model: bar.cfg.center ?? []
                 delegate: Loader {
                     property var moduleConfig: modelData
-                    Layout.preferredWidth: item ? item.implicitWidth : 0
-                    Layout.preferredHeight: item ? item.implicitHeight : 0
+                    Layout.preferredWidth: item ? bar.moduleWidth(item) : 0
+                    Layout.preferredHeight: item ? bar.moduleHeight(item) : 0
                     sourceComponent: bar.moduleComponent(modelData.id)
                     onLoaded: {
                         item.topbar = bar;
@@ -81,8 +81,8 @@ PanelWindow {
                 model: bar.cfg.right ?? []
                 delegate: Loader {
                     property var moduleConfig: modelData
-                    Layout.preferredWidth: item ? item.implicitWidth : 0
-                    Layout.preferredHeight: item ? item.implicitHeight : 0
+                    Layout.preferredWidth: item ? bar.moduleWidth(item) : 0
+                    Layout.preferredHeight: item ? bar.moduleHeight(item) : 0
                     sourceComponent: bar.moduleComponent(modelData.id)
                     onLoaded: {
                         item.topbar = bar;
@@ -95,6 +95,14 @@ PanelWindow {
 
     function modulePreset(module) {
         return bar.presets[module.id]?.[module.preset ?? "default"] ?? ({});
+    }
+
+    function moduleWidth(module) {
+        return module.width > 0 ? module.width : module.implicitWidth;
+    }
+
+    function moduleHeight(module) {
+        return module.height > 0 ? module.height : module.implicitHeight;
     }
 
     function moduleComponent(moduleId) {
