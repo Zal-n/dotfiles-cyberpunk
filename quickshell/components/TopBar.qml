@@ -129,9 +129,14 @@ PanelWindow {
                 triggeredOnStart: true
                 onTriggered: {
                     var d = new Date();
-                    var value = d.toLocaleTimeString(Qt.locale(), parent.preset.timeFormat ?? "HH:mm");
+                    var value;
+                    if (parent.preset.timeFormat)
+                    {
+                        value = d.toLocaleTimeString(Qt.locale(), parent.preset.timeFormat);
+                    }
                     if (parent.preset.showDate === true) {
-                        value += " | " + d.toISOString().split('T')[0];
+                        if(parent.preset.timeFormat) value += " | ";
+                        value += d.toISOString().split('T')[0];
                     }
                     parent.text = value;
                 }
