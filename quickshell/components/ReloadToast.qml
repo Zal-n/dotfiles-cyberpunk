@@ -8,23 +8,21 @@ PanelWindow {
     id: toast
     property string message: ""
     property bool failed: false
+    property string position: "bottom-center"
     readonly property int toastWidth: 300
 
     WlrLayershell.layer: WlrLayer.Overlay
-    anchors {
-        bottom: true
-        left: true
-        right: true
-    }
-    margins.bottom: 24
-    implicitHeight: 58
+    anchors { top: true; left: true; right: true; bottom: true }
+    implicitWidth: 0
+    implicitHeight: 0
     color: "transparent"
     exclusionMode: ExclusionMode.Ignore
     visible: message.length > 0
 
-    function showToast(nextMessage, isFailure) {
+    function showToast(nextMessage, isFailure, nextPosition) {
         message = nextMessage;
         failed = isFailure === true;
+        if (nextPosition) position = nextPosition;
         hideTimer.restart();
     }
 
@@ -35,7 +33,14 @@ PanelWindow {
     }
 
     Item {
-        anchors.centerIn: parent
+        x: toast.position === "top-left" || toast.position === "bottom-left"
+            ? 24
+            : toast.position === "top-right" || toast.position === "bottom-right"
+            ? parent.width - width - 24
+            : (parent.width - width) / 2
+        y: toast.position === "top-left" || toast.position === "top-center" || toast.position === "top-right"
+            ? 24
+            : parent.height - height - 24
         width: toast.toastWidth
         height: 42
 

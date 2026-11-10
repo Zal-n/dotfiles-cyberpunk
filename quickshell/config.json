@@ -14,7 +14,8 @@
     "wallpaper": "",
     "barHeight": 38,
     "cornerCutSize": 25,
-    "cornerCutSizeSmall": 15
+    "cornerCutSizeSmall": 15,
+    "toastPosition": "bottom-center"
   },
   "topbar": {
     "left": [
@@ -28,6 +29,7 @@
       { "id": "battery", "preset": "status-label", "device": "BAT0" },
       { "id": "separator", "preset": "space-1" },
       { "id": "wifi", "preset": "icon-signal" },
+      { "id": "audio", "preset": "icon-volume", "sink": "@DEFAULT_AUDIO_SINK@" },
       { "id": "separator", "preset": "space-1" },
       { "id": "controlCenter", "preset": "default" }
     ]

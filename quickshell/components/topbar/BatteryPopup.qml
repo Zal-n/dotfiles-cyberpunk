@@ -109,9 +109,9 @@ PanelWindow {
         }
         Text {
           text: popup.battery && popup.battery.powerDraw >= 0
-              ? "PWR_DRAW\t// " + (popup.battery.isCharging ? "+" : "") + popup.battery.powerDraw/10 + "W"
+              ? "PWR_DRAW\t// " + (popup.battery.isCharging ? "+" : "") + (popup.battery.powerDraw / 10).toFixed(2) + "W"
               : popup.battery && popup.battery.powerDraw < 0
-              ? "PWR_DRAW\t// " + popup.battery.powerDraw/10 + "W"
+              ? "PWR_DRAW\t// " + (popup.battery.powerDraw / 10).toFixed(2) + "W"
               : "PWR_DRAW // UNKNOWN"
           color: Theme.fg
           font.family: Theme.fontFamily

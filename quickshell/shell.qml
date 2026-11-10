@@ -27,7 +27,8 @@ ShellRoot {
             "wallpaper": "",
             "barHeight": 38,
             "cornerCutSize": 25,
-            "cornerCutSizeSmall": 15
+            "cornerCutSizeSmall": 15,
+            "toastPosition": "bottom-center"
         },
         "topbar": {
             "left": [
@@ -39,6 +40,7 @@ ShellRoot {
             ],
             "right": [
                 { "id": "battery", "preset": "status-label", "device": "BAT0" },
+                { "id": "audio", "preset": "icon-volume", "sink": "@DEFAULT_AUDIO_SINK@" },
                 { "id": "wifi", "preset": "icon-signal" },
                 { "id": "settings", "preset": "default" },
                 { "id": "controlCenter", "preset": "default" }
@@ -179,16 +181,23 @@ ShellRoot {
 
     ReloadToast {
       id: reloadToast
+      position: root.config.desktop?.toastPosition ?? "bottom-center"
     }
 
     TopBar {
       id: topbar
+      toast: reloadToast
       onControlCenterToggled: {
         topbar.closePopups();
         root.controlCenterOpen = !root.controlCenterOpen;
       }
       onPopupOpened: root.controlCenterOpen = false
       onSettingsToggled: root.settingsOpen = !root.settingsOpen
+    }
+
+    AudioPopup {
+      audio: topbar.audioModule
+      toast: reloadToast
     }
 
     BatteryPopup {

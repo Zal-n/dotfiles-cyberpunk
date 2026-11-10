@@ -13,6 +13,28 @@
       "fontSize": 20
     }
   },
+  "audio": {
+    "icon-volume": {
+      "style": "icon",
+      "fontSize": 16,
+      "showPercentage": false,
+      "refreshInterval": 2000,
+      "mutedIcon": "󰖁",
+      "unknownIcon": "󰕾",
+      "lowIcon": "󰕿",
+      "mediumIcon": "󰖀",
+      "highIcon": "󰕾"
+    },
+    "bars-volume": {
+      "style": "bars",
+      "barCount": 5,
+      "barWidth": 3,
+      "barSpacing": 2,
+      "barHeight": 18,
+      "showPercentage": false,
+      "refreshInterval": 2000
+    }
+  },
   "clock": {
     "time": {
       "timeFormat": "HH:mm",

@@ -16,6 +16,8 @@ PanelWindow {
     property var popupModules: ({})
     property var batteryModule: null
     property var wifiModule: null
+    property var audioModule: null
+    property var toast: null
 
     WlrLayershell.layer: WlrLayer.Top
 
@@ -54,6 +56,7 @@ PanelWindow {
                     onLoaded: {
                         item.topbar = bar;
                         item.moduleConfig = moduleConfig;
+                        item.toast = bar.toast;
                         bar.registerPopupModule(item);
                     }
                 }
@@ -73,6 +76,7 @@ PanelWindow {
                     onLoaded: {
                         item.topbar = bar;
                         item.moduleConfig = moduleConfig;
+                        item.toast = bar.toast;
                         bar.registerPopupModule(item);
                     }
                 }
@@ -93,6 +97,7 @@ PanelWindow {
                     onLoaded: {
                         item.topbar = bar;
                         item.moduleConfig = moduleConfig;
+                        item.toast = bar.toast;
                         bar.registerPopupModule(item);
                     }
                 }
@@ -111,6 +116,8 @@ PanelWindow {
                 bar.batteryModule = module;
             } else if (module.popupKey === "wifi") {
                 bar.wifiModule = module;
+            } else if (module.popupKey === "audio") {
+                bar.audioModule = module;
             }
         }
     }
@@ -158,6 +165,8 @@ PanelWindow {
             return batteryModule;
         case "wifi":
             return wifiModule;
+        case "audio":
+            return audioModule;
         default:
             return null;
         }
@@ -206,6 +215,11 @@ PanelWindow {
     Component {
         id: wifiModule
         WifiModule {}
+    }
+
+    Component {
+        id: audioModule
+        AudioModule {}
     }
 
     Component {
