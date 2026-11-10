@@ -213,6 +213,7 @@ PanelWindow {
             }
           }
         });
+        profiles.reverse();
         popup.powerProfiles = profiles;
         popup.activeProfile = selected || (profiles.length > 0 ? profiles[0] : "");
       }
