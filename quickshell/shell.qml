@@ -184,6 +184,10 @@ ShellRoot {
       position: root.config.desktop?.toastPosition ?? "bottom-center"
     }
 
+    BrightnessMonitor {
+      toast: reloadToast
+    }
+
     TopBar {
       id: topbar
       toast: reloadToast

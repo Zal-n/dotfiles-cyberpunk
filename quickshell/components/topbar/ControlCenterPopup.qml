@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 import Quickshell
+import Quickshell.Io
 import Quickshell.Wayland
 import ".."
 import "../.."
@@ -10,6 +11,8 @@ PanelWindow {
     id: cc
     signal closeRequested()
     signal openSettingsRequested()
+    property string pendingBrightness: "0%"
+    property string pendingVolume: "0.00"
 
     WlrLayershell.layer: WlrLayer.Overlay
 
@@ -21,6 +24,19 @@ PanelWindow {
     implicitHeight: 420
     color: "transparent"
     exclusionMode: ExclusionMode.Ignore
+
+    Process {
+        id: brightnessProcess
+        command: ["brightnessctl", "set", cc.pendingBrightness]
+    }
+
+    Process {
+        id: volumeProcess
+        command: ["wpctl", "set-volume", "@DEFAULT_AUDIO_SINK@", cc.pendingVolume]
+    }
+
+    Process { id: rebootProcess; command: ["systemctl", "reboot"] }
+    Process { id: poweroffProcess; command: ["systemctl", "poweroff"] }
 
 
     MouseArea {
@@ -120,13 +136,13 @@ PanelWindow {
                 Text { text: "DISPLAY BRIGHTNESS (OLED 165Hz)"; color: Theme.fg; font.family: Theme.fontFamily; font.pixelSize: 11 }
                 QuickSlider {
                     accentColor: Theme.cyan
-                    onValueChanged: { Quickshell.exec(["brightnessctl", "set", Math.round(value * 100) + "%"]); }
+                    onMoved: cc.setBrightness(value)
                 }
 
                 Text { text: "MASTER AUDIO OUTPUT"; color: Theme.fg; font.family: Theme.fontFamily; font.pixelSize: 11 }
                 QuickSlider {
                     accentColor: Theme.magenta
-                    onValueChanged: { Quickshell.exec(["wpctl", "set-volume", "@DEFAULT_AUDIO_SINK@", value.toFixed(2)]); }
+                    onMoved: cc.setVolume(value)
                 }
             }
 
@@ -164,7 +180,7 @@ PanelWindow {
                     //border.color: Theme.magenta
                     border.width: 1
                     Text { anchors.centerIn: parent; text: "REBOOT"; color: Theme.magenta; font.family: Theme.fontFamily; font.bold: true }
-                    MouseArea { anchors.fill: parent; onClicked: Quickshell.exec(["systemctl", "reboot"]) }
+                    MouseArea { anchors.fill: parent; onClicked: if (!rebootProcess.running) rebootProcess.running = true }
 
                     
                 }
@@ -173,9 +189,22 @@ PanelWindow {
                     implicitHeight: 32
                     color: Theme.magenta
                     Text { anchors.centerIn: parent; text: "SHUTDOWN"; color: Theme.bg; font.family: Theme.fontFamily; font.bold: true }
-                    MouseArea { anchors.fill: parent; onClicked: Quickshell.exec(["systemctl", "poweroff"]) }
+                    MouseArea { anchors.fill: parent; onClicked: if (!poweroffProcess.running) poweroffProcess.running = true }
                 }
+
             }
         }
+    }
+
+    function setBrightness(value) {
+        if (brightnessProcess.running) return;
+        cc.pendingBrightness = Math.round(value * 100) + "%";
+        brightnessProcess.running = true;
+    }
+
+    function setVolume(value) {
+        if (volumeProcess.running) return;
+        cc.pendingVolume = value.toFixed(2);
+        volumeProcess.running = true;
     }
 }

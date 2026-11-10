@@ -57,7 +57,7 @@ Item {
 
     Timer {
         id: refreshTimer
-        interval: audio.preset.refreshInterval ?? 2000
+        interval: audio.preset.refreshInterval ?? 150
         repeat: true
         running: true
         onTriggered: if (!volumeProcess.running) volumeProcess.running = true
@@ -80,7 +80,7 @@ Item {
                 : audio.volume < 0.67
                 ? (audio.preset.mediumIcon ?? "󰖀")
                 : (audio.preset.highIcon ?? "󰕾")
-            color: audio.muted ? Theme.yellow : Theme.magenta
+            color: audio.muted ? Theme.cyan : Theme.yellow
             font.family: Theme.fontFamily
             font.pixelSize: audio.preset.fontSize ?? 16
         }

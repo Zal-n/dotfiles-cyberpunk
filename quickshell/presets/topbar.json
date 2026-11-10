@@ -18,7 +18,7 @@
       "style": "icon",
       "fontSize": 16,
       "showPercentage": false,
-      "refreshInterval": 2000,
+      "refreshInterval": 150,
       "mutedIcon": "󰖁",
       "unknownIcon": "󰕾",
       "lowIcon": "󰕿",
@@ -32,7 +32,7 @@
       "barSpacing": 2,
       "barHeight": 18,
       "showPercentage": false,
-      "refreshInterval": 2000
+      "refreshInterval": 150
     }
   },
   "clock": {

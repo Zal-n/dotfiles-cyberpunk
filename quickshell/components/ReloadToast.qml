@@ -9,38 +9,39 @@ PanelWindow {
     property string message: ""
     property bool failed: false
     property string position: "bottom-center"
+    property int duration: 2200
     readonly property int toastWidth: 300
 
     WlrLayershell.layer: WlrLayer.Overlay
-    anchors { top: true; left: true; right: true; bottom: true }
-    implicitWidth: 0
-    implicitHeight: 0
+    x: position.endsWith("-left")
+        ? 24
+        : position.endsWith("-right")
+        ? (screen ? screen.width - width - 24 : 0)
+        : (screen ? (screen.width - width) / 2 : 0)
+    y: position.indexOf("top-") === 0
+        ? 24
+        : (screen ? screen.height - height - 24 : 0)
+    implicitWidth: toastWidth
+    implicitHeight: 42
     color: "transparent"
     exclusionMode: ExclusionMode.Ignore
     visible: message.length > 0
 
-    function showToast(nextMessage, isFailure, nextPosition) {
+    function showToast(nextMessage, isFailure, nextPosition, nextDuration) {
         message = nextMessage;
         failed = isFailure === true;
         if (nextPosition) position = nextPosition;
+        duration = nextDuration ?? 2200;
         hideTimer.restart();
     }
 
     Timer {
         id: hideTimer
-        interval: 2200
+        interval: toast.duration
         onTriggered: toast.message = ""
     }
 
     Item {
-        x: toast.position === "top-left" || toast.position === "bottom-left"
-            ? 24
-            : toast.position === "top-right" || toast.position === "bottom-right"
-            ? parent.width - width - 24
-            : (parent.width - width) / 2
-        y: toast.position === "top-left" || toast.position === "top-center" || toast.position === "top-right"
-            ? 24
-            : parent.height - height - 24
         width: toast.toastWidth
         height: 42
 

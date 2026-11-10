@@ -98,16 +98,23 @@ PanelWindow {
                 Layout.fillWidth: true
                 Text {
                     text: popup.muted ? "󰖁" : "󰕾"
-                    color: popup.muted ? Theme.magenta : Theme.cyan
+                    color: popup.muted ? Theme.cyan : Theme.yellow
                     font.family: Theme.fontFamily
                     font.pixelSize: 18
                 }
                 QuickSlider {
+                    id: volumeSlider
                     Layout.fillWidth: true
-                    value: Math.max(0, popup.volume)
                     enabled: popup.volume >= 0
                     accentColor: Theme.magenta
                     onMoved: popup.setVolume(value)
+
+                    Binding {
+                        target: volumeSlider
+                        property: "value"
+                        value: Math.max(0, popup.volume)
+                        when: !volumeSlider.pressed
+                    }
                 }
             }
 
@@ -139,16 +146,13 @@ PanelWindow {
         if (volumeSetProcess.running) return;
         popup.pendingVolume = next.toFixed(2);
         volumeSetProcess.running = true;
-        popup.volume = next;
-        if (popup.audio) popup.audio.volume = next;
-        popup.toast?.showToast("AUDIO // " + Math.round(next * 100) + "%", false);
+        popup.toast?.showToast("AUDIO // " + Math.round(next * 100) + "%", false, null, 900);
     }
 
     function toggleMute() {
         if (muteProcess.running) return;
         muteProcess.running = true;
         if (popup.audio) popup.audio.suppressNextToast = true;
-        if (popup.audio) popup.audio.muted = !popup.audio.muted;
-        popup.toast?.showToast(popup.muted ? "AUDIO // MUTED" : "AUDIO // UNMUTED", false);
+        popup.toast?.showToast(popup.muted ? "AUDIO // UNMUTED" : "AUDIO // MUTED", false, null, 900);
     }
 }
