@@ -10,9 +10,9 @@ Item {
     property var moduleConfig: ({})
     readonly property var preset: topbar ? topbar.modulePreset(moduleConfig) : ({})
     property int capacity: -1
-    property int health: -1
+    property real health: -1
     property int level: -1
-    property int powerDraw: -1
+    property real powerDraw: -1
     property string status: "Unknown"
     property bool popupOpen: false
     readonly property string popupKey: "battery"
@@ -81,7 +81,7 @@ Item {
                 if (battery.level >= 40) return "high";
                 if (battery.level >= 20) return "medium";
                 if (battery.level >= 10) return "low";
-                return "criticapacitycal";
+                return "criticalcapacity";
             }
             visible: battery.preset.style === "icon-label" && battery.preset.showIcon !== false
             text: iconSet[level] ?? iconSet.unknown ?? "󰁹"

@@ -12,20 +12,43 @@ PanelWindow {
 
   visible: battery !== null && battery.popupOpen
   WlrLayershell.layer: WlrLayer.Overlay
-  anchors.top: true
-  anchors.right: true
-  margins.top: Theme.barHeight
-  margins.right: 0
-  implicitWidth: 260
-  implicitHeight: 200
+  anchors {
+    top: true
+    left: true
+    right: true
+    bottom: true
+  }
+  implicitWidth: 0
+  implicitHeight: 0
   color: "transparent"
   exclusionMode: ExclusionMode.Ignore
 
-  Item {
+  MouseArea {
     anchors.fill: parent
+    onClicked: popup.battery.popupOpen = false
+  }
+
+  Item {
+    id: popupCard
+    anchors.top: parent.top
+    anchors.right: parent.right
+    anchors.topMargin: Theme.barHeight
+    width: 260
+    height: 200
+    z: 1
+
+    MouseArea {
+      anchors.fill: parent
+      z: -1
+    }
 
     Canvas {
       anchors.fill: parent
+      id: popupBackground
+      Connections {
+        target: popup
+        function onActiveModeChanged() { popupBackground.requestPaint(); }
+      }
       onPaint: {
         var ctx = getContext("2d");
         var cut = Theme.cornerCutSize;
@@ -106,7 +129,12 @@ PanelWindow {
           border.width: 1
 
           Canvas {
+            id: powerSaverBackground
             anchors.fill: parent
+            Connections {
+              target: popup
+              function onActiveModeChanged() { powerSaverBackground.requestPaint(); }
+            }
             onPaint: {
               var ctx = getContext("2d");
               var cut = Theme.cornerCutSizeSmall;
@@ -122,7 +150,7 @@ PanelWindow {
               ctx.fillStyle = Theme.surface;
               ctx.fill();
               ctx.lineWidth = 2;
-              ctx.strokeStyle = activeMode == 0 ? Theme.magenta : Theme.surface;
+              ctx.strokeStyle = popup.activeMode == 0 ? Theme.magenta : Theme.surface;
               ctx.stroke();
             }
           }
@@ -172,7 +200,12 @@ PanelWindow {
           border.width: 1
 
           Canvas {
+            id: performanceBackground
             anchors.fill: parent
+            Connections {
+              target: popup
+              function onActiveModeChanged() { performanceBackground.requestPaint(); }
+            }
             onPaint: {
               var ctx = getContext("2d");
               var cut = Theme.cornerCutSizeSmall;
@@ -201,12 +234,15 @@ PanelWindow {
             font.family: Theme.fontFamily
             font.bold: true
           }
+
+          MouseArea {
+            anchors.fill: parent
+            onClicked: {
+              popup.activeMode = 2;
+            }
+          }
         } 
       }
     }
   }
-  /*MouseArea {
-      anchors.fill: parent
-      onClicked: popup.battery.popupOpen = false
-    }*/
 }
