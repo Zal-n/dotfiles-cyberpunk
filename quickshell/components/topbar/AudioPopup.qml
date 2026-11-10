@@ -18,6 +18,7 @@ PanelWindow {
     readonly property string sink: audio?.sink ?? "@DEFAULT_AUDIO_SINK@"
 
     visible: audio !== null && audio.popupOpen
+    onVisibleChanged: if (visible) syncSlider()
     WlrLayershell.layer: WlrLayer.Overlay
     anchors { top: true; left: true; right: true; bottom: true }
     implicitWidth: 0
@@ -108,13 +109,6 @@ PanelWindow {
                     enabled: popup.volume >= 0
                     accentColor: Theme.magenta
                     onMoved: popup.setVolume(value)
-
-                    Binding {
-                        target: volumeSlider
-                        property: "value"
-                        value: Math.max(0, popup.volume)
-                        when: !volumeSlider.pressed
-                    }
                 }
             }
 
@@ -147,6 +141,19 @@ PanelWindow {
         popup.pendingVolume = next.toFixed(2);
         volumeSetProcess.running = true;
         popup.toast?.showToast("AUDIO // " + Math.round(next * 100) + "%", false, null, 900);
+    }
+
+    Connections {
+        target: popup.audio
+        function onVolumeChanged() {
+            popup.syncSlider();
+        }
+    }
+
+    function syncSlider() {
+        if (popup.audio && !volumeSlider.pressed && popup.audio.volume >= 0) {
+            volumeSlider.value = popup.audio.volume;
+        }
     }
 
     function toggleMute() {

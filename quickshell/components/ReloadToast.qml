@@ -13,14 +13,22 @@ PanelWindow {
     readonly property int toastWidth: 300
 
     WlrLayershell.layer: WlrLayer.Overlay
-    x: position.endsWith("-left")
-        ? 24
-        : position.endsWith("-right")
-        ? (screen ? screen.width - width - 24 : 0)
-        : (screen ? (screen.width - width) / 2 : 0)
-    y: position.indexOf("top-") === 0
-        ? 24
-        : (screen ? screen.height - height - 24 : 0)
+    anchors {
+        top: position.indexOf("top-") === 0
+        bottom: position.indexOf("bottom-") === 0
+        left: position.endsWith("-left") || position.endsWith("-center")
+        right: position.endsWith("-right") || position.endsWith("-center")
+    }
+    margins {
+        top: 24
+        bottom: 24
+        left: position.endsWith("-center") && screen
+            ? Math.max(0, (screen.width - toastWidth) / 2)
+            : 24
+        right: position.endsWith("-center") && screen
+            ? Math.max(0, (screen.width - toastWidth) / 2)
+            : 24
+    }
     implicitWidth: toastWidth
     implicitHeight: 42
     color: "transparent"
