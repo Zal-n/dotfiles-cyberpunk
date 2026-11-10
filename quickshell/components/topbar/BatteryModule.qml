@@ -17,7 +17,9 @@ Item {
     property bool popupOpen: false
     readonly property string popupKey: "battery"
     readonly property int popupHeight: 100
-    readonly property bool isCharging: status.trim().toLowerCase() === "charging"
+    readonly property string normalizedStatus: status.trim().toLowerCase()
+    readonly property bool isCharging: normalizedStatus === "charging"
+    readonly property bool isDischarging: normalizedStatus === "discharging"
     width: batteryContent.implicitWidth
     height: batteryContent.implicitHeight
 
@@ -45,7 +47,10 @@ Item {
                 battery.level = Number.isFinite(parsedLevel) ? parsedLevel : -1;
                 battery.capacity = Number.isFinite(parsedCapacity) ? parsedCapacity : -1;
                 battery.health = (Number.isFinite(parsedCapacity) && Number.isFinite(parsedMaxCapacity)) ? (parsedCapacity/parsedMaxCapacity*100) >= 100 ?  100 : (parsedCapacity/parsedMaxCapacity*100) : -1;
-                battery.powerDraw = Number.isFinite(parsedDraw) ? (parsedDraw/100000) : -1;
+                var drawMagnitude = Number.isFinite(parsedDraw) ? (parsedDraw / 100000) : -1;
+                battery.powerDraw = drawMagnitude >= 0
+                    ? (battery.isDischarging ? -drawMagnitude : drawMagnitude)
+                    : -1;
                 batteryRefresh.restart();
             }
         }

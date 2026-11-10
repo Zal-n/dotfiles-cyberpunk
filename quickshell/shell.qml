@@ -193,6 +193,7 @@ ShellRoot {
 
     BatteryPopup {
       battery: topbar.batteryModule
+      toast: reloadToast
     }
 
     WifiPopup {

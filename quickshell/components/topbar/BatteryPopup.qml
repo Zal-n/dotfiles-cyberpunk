@@ -8,7 +8,10 @@ import "../.."
 PanelWindow {
   id: popup
   property var battery: null
-  property int activeMode: 0
+  property var toast: null
+  property var powerProfiles: []
+  property string activeProfile: ""
+  property string pendingProfile: ""
 
   visible: battery !== null && battery.popupOpen
   WlrLayershell.layer: WlrLayer.Overlay
@@ -105,6 +108,8 @@ PanelWindow {
         }
         Text {
           text: popup.battery && popup.battery.powerDraw >= 0
+              ? "PWR_DRAW\t// " + (popup.battery.isCharging ? "+" : "") + popup.battery.powerDraw/10 + "W"
+              : popup.battery && popup.battery.powerDraw < 0
               ? "PWR_DRAW\t// " + popup.battery.powerDraw/10 + "W"
               : "PWR_DRAW // UNKNOWN"
           color: Theme.fg
@@ -122,127 +127,117 @@ PanelWindow {
         Layout.fillWidth: true 
         spacing: 6
 
-        Rectangle {
-          Layout.fillWidth: true
-          implicitHeight: 32
-          color: Theme.surface
-          border.width: 1
+        Repeater {
+          model: popup.powerProfiles
+          delegate: Item {
+            property string profileName: modelData
+            property bool selected: profileName === popup.activeProfile
+            property bool first: index === 0
+            property bool last: index === popup.powerProfiles.length - 1
+            Layout.fillWidth: true
+            implicitHeight: 32
 
-          Canvas {
-            id: powerSaverBackground
-            anchors.fill: parent
-            Connections {
-              target: popup
-              function onActiveModeChanged() { powerSaverBackground.requestPaint(); }
+            Canvas {
+              id: profileBackground
+              anchors.fill: parent
+              Connections {
+                target: popup
+                function onActiveProfileChanged() { profileBackground.requestPaint(); }
+              }
+              onPaint: {
+                var ctx = getContext("2d");
+                var cut = Theme.cornerCutSizeSmall;
+                ctx.clearRect(0, 0, width, height);
+                ctx.beginPath();
+                ctx.moveTo(first ? 0 : 0, 0);
+                ctx.lineTo(last ? width - cut : width, 0);
+                if (last) ctx.lineTo(width, cut);
+                ctx.lineTo(width, height);
+                ctx.lineTo(first ? cut : 0, height);
+                if (first) ctx.lineTo(0, height - cut);
+                ctx.closePath();
+                ctx.fillStyle = Theme.surface;
+                ctx.fill();
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = selected ? Theme.magenta : Theme.surface;
+                ctx.stroke();
+              }
             }
-            onPaint: {
-              var ctx = getContext("2d");
-              var cut = Theme.cornerCutSizeSmall;
-              ctx.clearRect(0, 0, width, height);
-              ctx.beginPath();
-              ctx.moveTo(0, 0);
-              ctx.lineTo(width, 0);
-              ctx.lineTo(width, height);
-              ctx.lineTo(cut, height);
-              ctx.lineTo(0, height - cut);
-              ctx.closePath();
 
-              ctx.fillStyle = Theme.surface;
-              ctx.fill();
-              ctx.lineWidth = 2;
-              ctx.strokeStyle = popup.activeMode == 0 ? Theme.magenta : Theme.surface;
-              ctx.stroke();
+            Text {
+              anchors.centerIn: parent
+              text: profileName.toUpperCase().replace("-", "_")
+              color: selected ? Theme.magenta : Theme.fgDim
+              font.family: Theme.fontFamily
+              font.bold: true
+              font.pixelSize: 10
             }
-          }
 
-          Text {
-            anchors.centerIn: parent
-            text: "PWR_SVR"
-            color: Theme.magenta
-            font.family: Theme.fontFamily
-            font.bold: true
-          }
-
-          MouseArea {
-            anchors.fill: parent
-            onClicked: {
-              popup.activeMode = 0
-            }
-          }
-        }
-
-        Rectangle {
-          Layout.fillWidth: true
-          implicitHeight: 32
-          color: Theme.surface
-          border.width: 0.5
-          border.color: popup.activeMode == 1 ? Theme.magenta : Theme.surface
-
-          Text {
-            anchors.centerIn: parent
-            text: "BALANCED"
-            color: Theme.magenta
-            font.family: Theme.fontFamily
-            font.bold: true
-          }
-          MouseArea {
-            anchors.fill: parent
-            onClicked: {
-              popup.activeMode = 1
+            MouseArea {
+              anchors.fill: parent
+              cursorShape: Qt.PointingHandCursor
+              onClicked: popup.selectProfile(profileName)
             }
           }
         }
 
-        Rectangle {
-          Layout.fillWidth: true
-          implicitHeight: 32
-          color: Theme.surface
-          border.width: 1
-
-          Canvas {
-            id: performanceBackground
-            anchors.fill: parent
-            Connections {
-              target: popup
-              function onActiveModeChanged() { performanceBackground.requestPaint(); }
-            }
-            onPaint: {
-              var ctx = getContext("2d");
-              var cut = Theme.cornerCutSizeSmall;
-              ctx.clearRect(0, 0, width, height);
-              ctx.beginPath();
-              ctx.moveTo(0, 0);
-              ctx.lineTo(width-cut, 0);
-              ctx.lineTo(width, cut);
-              ctx.lineTo(width, height);
-              ctx.lineTo(0, height);
-              ctx.lineTo(0, 0);
-              ctx.closePath();
-
-              ctx.fillStyle = Theme.surface;
-              ctx.fill();
-              ctx.lineWidth = 2;
-              ctx.strokeStyle = popup.activeMode == 2 ? Theme.magenta : Theme.surface;
-              ctx.stroke();
-            }
-          }
-
-          Text {
-            anchors.centerIn: parent
-            text: "PERF"
-            color: Theme.magenta
-            font.family: Theme.fontFamily
-            font.bold: true
-          }
-
-          MouseArea {
-            anchors.fill: parent
-            onClicked: {
-              popup.activeMode = 2;
-            }
-          }
-        } 
+        Text {
+          visible: popup.powerProfiles.length === 0
+          text: "POWER PROFILES // UNAVAILABLE"
+          color: Theme.fgDim
+          font.family: Theme.fontFamily
+          font.pixelSize: 10
+        }
       }
     }
+  }
+
+  Process {
+    id: profileListProcess
+    command: ["powerprofilesctl", "list"]
+    running: true
+    stdout: StdioCollector {
+      onStreamFinished: {
+        var profiles = [];
+        var selected = "";
+        text.split(/\r?\n/).forEach(function(line) {
+          var match = line.match(/^(?:\s*\*\s+| {2})([a-z][a-z0-9_-]*)\s*:\s*$/i);
+          if (match) {
+            var profileName = match[1];
+            if (profiles.indexOf(profileName) === -1) {
+              profiles.push(profileName);
+            }
+            if (/^\s*\*/.test(line)) {
+              selected = profileName;
+            }
+          }
+        });
+        popup.powerProfiles = profiles;
+        popup.activeProfile = selected || (profiles.length > 0 ? profiles[0] : "");
+      }
+    }
+    stderr: StdioCollector {}
+  }
+
+  Process {
+    id: profileSetProcess
+    command: ["powerprofilesctl", "set", popup.pendingProfile]
+    onExited: function(exitCode) {
+      if (exitCode === 0) {
+        popup.activeProfile = popup.pendingProfile;
+        popup.toast?.showToast("POWER // " + popup.pendingProfile.toUpperCase() + " ACTIVE", false);
+        profileListProcess.running = true;
+      } else {
+        popup.toast?.showToast("POWER // PROFILE CHANGE FAILED", true);
+      }
+    }
+  }
+
+  function selectProfile(profile) {
+    if (profile === activeProfile || profileSetProcess.running) {
+      return;
+    }
+    pendingProfile = profile;
+    profileSetProcess.running = true;
   }
 }
