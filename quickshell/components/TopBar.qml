@@ -56,7 +56,6 @@ PanelWindow {
                     onLoaded: {
                         item.topbar = bar;
                         item.moduleConfig = moduleConfig;
-                        item.toast = bar.toast;
                         bar.registerPopupModule(item);
                     }
                 }
@@ -76,7 +75,6 @@ PanelWindow {
                     onLoaded: {
                         item.topbar = bar;
                         item.moduleConfig = moduleConfig;
-                        item.toast = bar.toast;
                         bar.registerPopupModule(item);
                     }
                 }
@@ -97,7 +95,6 @@ PanelWindow {
                     onLoaded: {
                         item.topbar = bar;
                         item.moduleConfig = moduleConfig;
-                        item.toast = bar.toast;
                         bar.registerPopupModule(item);
                     }
                 }

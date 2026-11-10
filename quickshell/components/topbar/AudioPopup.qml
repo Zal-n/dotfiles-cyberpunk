@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 import Quickshell
+import Quickshell.Io
 import Quickshell.Wayland
 import ".."
 import "../.."
@@ -13,6 +14,7 @@ PanelWindow {
     property real volume: audio?.volume ?? -1
     property bool muted: audio?.muted ?? false
     property bool adjusting: false
+    property string pendingVolume: "0.00"
     readonly property string sink: audio?.sink ?? "@DEFAULT_AUDIO_SINK@"
 
     visible: audio !== null && audio.popupOpen
@@ -22,6 +24,16 @@ PanelWindow {
     implicitHeight: 0
     color: "transparent"
     exclusionMode: ExclusionMode.Ignore
+
+    Process {
+        id: volumeSetProcess
+        command: ["wpctl", "set-volume", popup.sink, popup.pendingVolume]
+    }
+
+    Process {
+        id: muteProcess
+        command: ["wpctl", "set-mute", popup.sink, "toggle"]
+    }
 
     MouseArea {
         anchors.fill: parent
@@ -124,14 +136,17 @@ PanelWindow {
     function setVolume(value) {
         var next = Math.max(0, Math.min(1, value));
         if (popup.audio) popup.audio.suppressNextToast = true;
-        Quickshell.exec(["wpctl", "set-volume", popup.sink, next.toFixed(2)]);
+        if (volumeSetProcess.running) return;
+        popup.pendingVolume = next.toFixed(2);
+        volumeSetProcess.running = true;
         popup.volume = next;
         if (popup.audio) popup.audio.volume = next;
         popup.toast?.showToast("AUDIO // " + Math.round(next * 100) + "%", false);
     }
 
     function toggleMute() {
-        Quickshell.exec(["wpctl", "set-mute", popup.sink, "toggle"]);
+        if (muteProcess.running) return;
+        muteProcess.running = true;
         if (popup.audio) popup.audio.suppressNextToast = true;
         if (popup.audio) popup.audio.muted = !popup.audio.muted;
         popup.toast?.showToast(popup.muted ? "AUDIO // MUTED" : "AUDIO // UNMUTED", false);

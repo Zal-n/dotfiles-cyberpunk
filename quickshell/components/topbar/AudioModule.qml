@@ -7,7 +7,6 @@ Item {
     id: audio
     property var topbar
     property var moduleConfig: ({})
-    property var toast: null
     readonly property var preset: topbar ? topbar.modulePreset(moduleConfig) : ({})
     property real volume: -1
     property bool muted: false
@@ -42,10 +41,12 @@ Item {
                     if (audio.suppressNextToast) {
                         audio.suppressNextToast = false;
                     } else {
-                        audio.toast?.showToast(
+                        if (audio.topbar && audio.topbar.toast) {
+                            audio.topbar.toast.showToast(
                             nextMuted ? "AUDIO // MUTED" : "AUDIO // " + Math.round(nextVolume * 100) + "%",
                             false
-                        );
+                            );
+                        }
                     }
                 }
                 audio.hasInitialState = true;
