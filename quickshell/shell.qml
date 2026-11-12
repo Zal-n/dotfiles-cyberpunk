@@ -12,6 +12,7 @@ ShellRoot {
     property bool launcherOpen: false
     property bool settingsOpen: false
     property bool powerMenuOpen: false
+    property var defaultApps: ({})
     readonly property var defaultConfig: ({
         "theme": {
             "bg": "#0a0b10",
@@ -61,6 +62,13 @@ ShellRoot {
         "hardware": {
             "brightnessDevice": "intel_backlight",
             "audioSink": "@DEFAULT_AUDIO_SINK@"
+        },
+        "defaultApps": {
+            "browser": ["zen-browser"],
+            "terminal": ["kitty"],
+            "launcher": ["quickshell", "ipc", "call", "shell", "toggleLauncher"],
+            "fileManager": ["kitty", "-e", "yazi"],
+            "editor": ["code"]
         }
     })
     property var config: ({})
@@ -119,6 +127,7 @@ ShellRoot {
 
     function applyConfig(newConfig) {
       root.config = newConfig;
+      root.defaultApps = newConfig.defaultApps ?? root.defaultConfig.defaultApps;
       Theme.rawConfig = newConfig;
     }
 
@@ -165,6 +174,18 @@ ShellRoot {
       function closeLauncher() { root.launcherOpen = false; }
 
       function toggleSettings() { root.settingsOpen = !root.settingsOpen; }
+      function launchDefaultApp(app: string) { root.launchDefaultApp(app); }
+      function launchBrowser() { root.launchDefaultApp("browser"); }
+      function launchTerminal() { root.launchDefaultApp("terminal"); }
+      function launchLauncher() { root.launchDefaultApp("launcher"); }
+      function launchFileManager() { root.launchDefaultApp("fileManager"); }
+      function launchEditor() { root.launchDefaultApp("editor"); }
+      function setDefaultApp(app: string, commandJson: string) {
+        root.setDefaultApp(app, commandJson);
+      }
+      function resetDefaultApp(app: string) {
+        root.resetDefaultApp(app);
+      }
       function openPowerMenu() { powerMenu.open(); }
       function closePowerMenu() { powerMenu.close(); }
       function togglePowerMenu() {
@@ -180,6 +201,60 @@ ShellRoot {
       root.launcherOpen = false;
       root.settingsOpen = false;
       topbar.closePopups();
+    }
+
+    Process {
+      id: defaultAppProcess
+      onExited: function(exitCode) {
+        if (exitCode !== 0) {
+          reloadToast.showToast("APP // LAUNCH FAILED", true);
+        }
+      }
+    }
+
+    function launchDefaultApp(app) {
+      var command = root.defaultApps[app];
+      if (!Array.isArray(command) || command.length === 0) {
+        reloadToast.showToast("APP // NOT CONFIGURED: " + app.toUpperCase(), true);
+        return;
+      }
+      if (defaultAppProcess.running) {
+        return;
+      }
+      closeTransientWindows();
+      defaultAppProcess.command = command;
+      defaultAppProcess.running = true;
+    }
+
+    function setDefaultApp(app, commandJson) {
+      var command;
+      try {
+        command = JSON.parse(commandJson);
+      } catch (e) {
+        reloadToast.showToast("APP // INVALID COMMAND", true);
+        return;
+      }
+      if (!Array.isArray(command) || command.length === 0
+              || command.some(function(part) { return typeof part !== "string" || part.length === 0; })) {
+        reloadToast.showToast("APP // INVALID COMMAND", true);
+        return;
+      }
+      var cfg = root.config;
+      cfg.defaultApps = cfg.defaultApps ?? {};
+      cfg.defaultApps[app] = command;
+      root.saveConfig(cfg);
+    }
+
+    function resetDefaultApp(app) {
+      var cfg = root.config;
+      cfg.defaultApps = cfg.defaultApps ?? {};
+      var defaults = root.defaultConfig.defaultApps;
+      if (!defaults[app]) {
+        reloadToast.showToast("APP // UNKNOWN DEFAULT: " + app.toUpperCase(), true);
+        return;
+      }
+      cfg.defaultApps[app] = defaults[app];
+      root.saveConfig(cfg);
     }
 
     IpcHandler {

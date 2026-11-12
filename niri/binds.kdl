@@ -1,8 +1,8 @@
 binds {
     // Custom Core Bindings
-    Mod+T       { spawn "kitty"; }
-    Mod+D       { spawn "zen-browser"; }
-    Mod+A       { spawn "quickshell" "ipc" "call" "shell" "toggleLauncher"; }
+    Mod+T       { spawn "quickshell" "ipc" "call" "shell" "launchTerminal"; }
+    Mod+D       { spawn "quickshell" "ipc" "call" "shell" "launchBrowser"; }
+    Mod+A       { spawn "quickshell" "ipc" "call" "shell" "launchLauncher"; }
     Mod+C       { spawn "quickshell" "ipc" "call" "shell" "toggleControlCenter"; }
     Mod+F       { maximize-column; }
     Mod+Shift+F { fullscreen-window; }

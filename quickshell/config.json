@@ -48,5 +48,12 @@
   "hardware": {
     "brightnessDevice": "intel_backlight",
     "audioSink": "@DEFAULT_AUDIO_SINK@"
+  },
+  "defaultApps": {
+    "browser": ["zen-browser"],
+    "terminal": ["kitty"],
+    "launcher": ["quickshell", "ipc", "call", "shell", "toggleLauncher"],
+    "fileManager": ["kitty", "-e", "yazi"],
+    "editor": ["code"]
   }
 }

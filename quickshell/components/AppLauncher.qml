@@ -97,10 +97,7 @@ PanelWindow {
                         onTextChanged: filterModel(text)
                         onAccepted: {
                             if (filteredList.count > 0) {
-                                var cmd = filteredList.get(0).exec;
-                                launcherProc.command = ["sh", "-c", cmd + " &"];
-                                launcherProc.running = true;
-                                launcher.closeRequested();
+                                launcher.launchApp(filteredList.get(0));
                             } else if (text.length > 0) {
                                 launcherProc.command = ["sh", "-c", text + " &"];
                                 launcherProc.running = true;
@@ -150,9 +147,7 @@ PanelWindow {
                         anchors.fill: parent
                         hoverEnabled: true
                         onClicked: {
-                            launcherProc.command = ["sh", "-c", model.exec + " &"];
-                            launcherProc.running = true;
-                            launcher.closeRequested();
+                            launcher.launchApp(model);
                         }
                     }
                 }
@@ -165,6 +160,17 @@ PanelWindow {
     ListModel { id: filteredList }
 
     Process { id: launcherProc }
+
+    function launchApp(app) {
+        if (app.defaultApp) {
+            root.launchDefaultApp(app.defaultApp);
+            launcher.closeRequested();
+            return;
+        }
+        launcherProc.command = ["sh", "-c", app.exec + " &"];
+        launcherProc.running = true;
+        launcher.closeRequested();
+    }
 
     function filterModel(query) {
         filteredList.clear();
@@ -179,8 +185,8 @@ PanelWindow {
 
     Component.onCompleted: {
         var apps = [
-            { name: "Terminal (Kitty)", exec: "kitty" },
-            { name: "Browser (Firefox)", exec: "firefox" },
+            { name: "Default Terminal", exec: "default terminal", defaultApp: "terminal" },
+            { name: "Default Browser", exec: "default browser", defaultApp: "browser" },
             { name: "System Monitor (Btop)", exec: "kitty -e btop" },
             { name: "Fastfetch", exec: "kitty -e fastfetch" },
             { name: "File Manager (Yazi)", exec: "kitty -e yazi" },
