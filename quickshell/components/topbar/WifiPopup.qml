@@ -9,17 +9,35 @@ PanelWindow {
 
     visible: wifi !== null && wifi.popupOpen
     WlrLayershell.layer: WlrLayer.Overlay
-    anchors.top: true
-    anchors.right: true
-    margins.top: Theme.barHeight
-    margins.right: 0
-    implicitWidth: 260
-    implicitHeight: 100
+    anchors {
+        top: true
+        left: true
+        right: true
+        bottom: true
+    }
+    implicitWidth: 0
+    implicitHeight: 0
     color: "transparent"
     exclusionMode: ExclusionMode.Ignore
 
-    Item {
+    MouseArea {
         anchors.fill: parent
+        onClicked: popup.wifi.popupOpen = false
+    }
+
+    Item {
+        id: popupCard
+        anchors.top: parent.top
+        anchors.right: parent.right
+        anchors.topMargin: Theme.barHeight
+        width: 260
+        height: 100
+        z: 1
+
+        MouseArea {
+            anchors.fill: parent
+            z: -1
+        }
 
         Canvas {
             anchors.fill: parent
@@ -67,11 +85,6 @@ PanelWindow {
                 font.family: Theme.fontFamily
                 font.pixelSize: 10
             }
-        }
-
-        MouseArea {
-            anchors.fill: parent
-            onClicked: popup.wifi.popupOpen = false
         }
     }
 }

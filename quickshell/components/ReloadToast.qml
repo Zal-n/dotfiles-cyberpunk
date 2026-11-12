@@ -54,11 +54,12 @@ PanelWindow {
         height: 42
 
         Canvas {
+            id: toastCanvas
             anchors.fill: parent
             Connections {
                 target: toast
-                function onMessageChanged() { parent.requestPaint(); }
-                function onFailedChanged() { parent.requestPaint(); }
+                function onMessageChanged() { toastCanvas.requestPaint(); }
+                function onFailedChanged() { toastCanvas.requestPaint(); }
             }
             onPaint: {
                 var ctx = getContext("2d");

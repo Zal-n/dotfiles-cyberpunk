@@ -165,7 +165,10 @@ PanelWindow {
                             MouseArea {
                                 anchors.fill: parent
                                 onClicked: {
-                                    root.config.desktop.wallpaper = wpInput.text;
+                                    var cfg = root.config;
+                                    if (!cfg.desktop) cfg.desktop = {};
+                                    cfg.desktop.wallpaper = wpInput.text;
+                                    root.saveConfig(cfg);
                                 }
                             }
                         }

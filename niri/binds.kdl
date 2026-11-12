@@ -55,7 +55,6 @@ binds {
     XF86MonBrightnessDown allow-when-locked=true { spawn "brightnessctl" "--class=backlight" "set" "10%-"; }
 
 
-    Mod+X hotkey-overlay-title="Power Menu: Toggle" { spawn "dms" "ipc" "call" "powermenu" "toggle"; }
-    Mod+Ctrl+P hotkey-overlay-title="Shutdown" { spawn "sh" "-c" "shutdown now"; }
+    Mod+X hotkey-overlay-title="Power Menu: Toggle" { spawn "quickshell" "ipc" "call" "shell" "togglePowerMenu"; }
 }
 

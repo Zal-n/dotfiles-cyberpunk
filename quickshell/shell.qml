@@ -11,6 +11,7 @@ ShellRoot {
     property bool controlCenterOpen: false
     property bool launcherOpen: false
     property bool settingsOpen: false
+    property bool powerMenuOpen: false
     readonly property var defaultConfig: ({
         "theme": {
             "bg": "#0a0b10",
@@ -28,7 +29,18 @@ ShellRoot {
             "barHeight": 38,
             "cornerCutSize": 25,
             "cornerCutSizeSmall": 15,
-            "toastPosition": "bottom-center"
+            "toastPosition": "bottom-center",
+            "powerMenu": {
+                "position": "bottom-center",
+                "holdTime": 1500,
+                "entries": [
+                    { "id": "poweroff", "label": "POWER OFF", "key": "x" },
+                    { "id": "restart", "label": "RESTART", "key": "r" },
+                    { "id": "lock", "label": "LOCK", "key": "l" },
+                    { "id": "logout", "label": "LOGOUT", "key": "o" },
+                    { "id": "exit-niri", "label": "EXIT NIRI", "key": "e" }
+                ]
+            }
         },
         "topbar": {
             "left": [
@@ -153,8 +165,21 @@ ShellRoot {
       function closeLauncher() { root.launcherOpen = false; }
 
       function toggleSettings() { root.settingsOpen = !root.settingsOpen; }
+      function openPowerMenu() { powerMenu.open(); }
+      function closePowerMenu() { powerMenu.close(); }
+      function togglePowerMenu() {
+        if (root.powerMenuOpen) powerMenu.close();
+        else powerMenu.open();
+      }
 
       function getConfig() { return root.config; }
+    }
+
+    function closeTransientWindows() {
+      root.controlCenterOpen = false;
+      root.launcherOpen = false;
+      root.settingsOpen = false;
+      topbar.closePopups();
     }
 
     IpcHandler {
@@ -230,5 +255,10 @@ ShellRoot {
     SettingsWindow {
       visible: root.settingsOpen
       onCloseRequested: root.settingsOpen = false
+    }
+
+    PowerMenu {
+      id: powerMenu
+      toast: reloadToast
     }
 }
