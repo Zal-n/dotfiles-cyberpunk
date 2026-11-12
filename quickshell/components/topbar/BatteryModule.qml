@@ -86,7 +86,7 @@ Item {
                 if (battery.level >= 40) return "high";
                 if (battery.level >= 20) return "medium";
                 if (battery.level >= 10) return "low";
-                return "criticalcapacity";
+                return "critical";
             }
             visible: battery.preset.style === "icon-label" && battery.preset.showIcon !== false
             text: iconSet[level] ?? iconSet.unknown ?? "󰁹"
