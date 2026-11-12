@@ -49,10 +49,6 @@ PanelWindow {
     Canvas {
       anchors.fill: parent
       id: popupBackground
-      Connections {
-        target: popup
-        function onActiveModeChanged() { popupBackground.requestPaint(); }
-      }
       onPaint: {
         var ctx = getContext("2d");
         var cut = Theme.cornerCutSize;

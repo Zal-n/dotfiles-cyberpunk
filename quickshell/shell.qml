@@ -41,6 +41,21 @@ ShellRoot {
                     { "id": "logout", "label": "LOGOUT", "key": "o" },
                     { "id": "exit-niri", "label": "EXIT NIRI", "key": "e" }
                 ]
+            },
+            "controlCenter": {
+                "width": 420,
+                "height": 520,
+                "columns": 12,
+                "rowHeight": 64,
+                "moduleGap": 4,
+                "modules": [
+                    { "id": "wifi", "type": "wifi", "x": 0, "y": 0, "w": 6, "h": 2 },
+                    { "id": "audio", "type": "audio", "x": 6, "y": 0, "w": 6, "h": 2 },
+                    { "id": "microphone", "type": "microphone", "x": 0, "y": 2, "w": 4, "h": 2 },
+                    { "id": "brightness", "type": "brightness", "x": 4, "y": 2, "w": 8, "h": 2 },
+                    { "id": "bluetooth", "type": "bluetooth", "x": 0, "y": 4, "w": 4, "h": 2 },
+                    { "id": "background-apps", "type": "background_apps", "x": 4, "y": 4, "w": 8, "h": 2 }
+                ]
             }
         },
         "topbar": {
@@ -180,6 +195,17 @@ ShellRoot {
       function launchLauncher() { root.launchDefaultApp("launcher"); }
       function launchFileManager() { root.launchDefaultApp("fileManager"); }
       function launchEditor() { root.launchDefaultApp("editor"); }
+      function runSystemAction(action: string) { root.runSystemAction(action); }
+      function volumeUp() { root.runInputCommand(["wpctl", "set-volume", "@DEFAULT_AUDIO_SINK@", "0.1+", "-l", "1.0"]); }
+      function volumeDown() { root.runInputCommand(["wpctl", "set-volume", "@DEFAULT_AUDIO_SINK@", "0.1-"]); }
+      function toggleMute() { root.runInputCommand(["wpctl", "set-mute", "@DEFAULT_AUDIO_SINK@", "toggle"]); }
+      function toggleMicMute() { root.runInputCommand(["wpctl", "set-mute", "@DEFAULT_AUDIO_SOURCE@", "toggle"]); }
+      function brightnessUp() { root.runInputCommand(["brightnessctl", "--class=backlight", "set", "+10%"]); }
+      function brightnessDown() { root.runInputCommand(["brightnessctl", "--class=backlight", "set", "10%-"]); }
+      function mediaPlayPause() { root.runInputCommand(["playerctl", "play-pause"]); }
+      function mediaStop() { root.runInputCommand(["playerctl", "stop"]); }
+      function mediaPrevious() { root.runInputCommand(["playerctl", "previous"]); }
+      function mediaNext() { root.runInputCommand(["playerctl", "next"]); }
       function setDefaultApp(app: string, commandJson: string) {
         root.setDefaultApp(app, commandJson);
       }
@@ -212,17 +238,66 @@ ShellRoot {
       }
     }
 
+    Process {
+      id: systemActionProcess
+      onExited: function(exitCode) {
+        if (exitCode !== 0) {
+          reloadToast.showToast("SYSTEM // ACTION FAILED", true);
+        }
+      }
+    }
+
+    Process {
+      id: inputActionProcess
+      onExited: function(exitCode) {
+        if (exitCode !== 0) {
+          reloadToast.showToast("INPUT // ACTION FAILED", true);
+        }
+      }
+    }
+
+    function runInputCommand(command) {
+      if (!Array.isArray(command) || command.length === 0 || inputActionProcess.running) {
+        return;
+      }
+      inputActionProcess.command = command;
+      inputActionProcess.running = true;
+    }
+
+    function runSystemAction(action) {
+      var commands = {
+        "poweroff": ["systemctl", "poweroff"],
+        "restart": ["systemctl", "reboot"],
+        "lock": ["loginctl", "lock-session"],
+        "logout": ["loginctl", "terminate-user", Quickshell.env("USER")],
+        "exit-niri": ["niri", "msg", "action", "quit"]
+      };
+      var command = commands[action];
+      if (!command) {
+        reloadToast.showToast("SYSTEM // UNKNOWN ACTION", true);
+        return;
+      }
+      if (systemActionProcess.running) {
+        return;
+      }
+      systemActionProcess.command = command;
+      systemActionProcess.running = true;
+    }
+
     function launchDefaultApp(app) {
       var command = root.defaultApps[app];
       if (!Array.isArray(command) || command.length === 0) {
         reloadToast.showToast("APP // NOT CONFIGURED: " + app.toUpperCase(), true);
         return;
       }
-      if (defaultAppProcess.running) {
-        return;
-      }
       closeTransientWindows();
-      defaultAppProcess.command = command;
+      var escapedCommand = command.map(function(part) {
+        return "'" + part.replace(/'/g, "'\\''") + "'";
+      }).join(" ");
+      defaultAppProcess.command = [
+        "sh", "-c",
+        escapedCommand + " >/dev/null 2>&1 &"
+      ];
       defaultAppProcess.running = true;
     }
 
@@ -314,6 +389,7 @@ ShellRoot {
     }
 
     ControlCenterPopup {
+      topbar: topbar
       visible: root.controlCenterOpen
       onCloseRequested: root.controlCenterOpen = false
       onOpenSettingsRequested: {
@@ -334,6 +410,5 @@ ShellRoot {
 
     PowerMenu {
       id: powerMenu
-      toast: reloadToast
     }
 }

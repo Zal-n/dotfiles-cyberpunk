@@ -18,31 +18,137 @@
     "toastPosition": "bottom-center",
     "powerMenu": {
       "position": "bottom-center",
-      "holdTime": 1500,
+      "holdTime": 250,
       "entries": [
-        { "id": "poweroff", "label": "POWER OFF", "key": "x" },
-        { "id": "restart", "label": "RESTART", "key": "r" },
-        { "id": "lock", "label": "LOCK", "key": "l" },
-        { "id": "logout", "label": "LOGOUT", "key": "o" },
-        { "id": "exit-niri", "label": "EXIT NIRI", "key": "e" }
+        {
+          "id": "poweroff",
+          "label": "POWER OFF",
+          "key": "x"
+        },
+        {
+          "id": "restart",
+          "label": "RESTART",
+          "key": "r"
+        },
+        {
+          "id": "lock",
+          "label": "LOCK",
+          "key": "l"
+        },
+        {
+          "id": "logout",
+          "label": "LOGOUT",
+          "key": "o"
+        },
+        {
+          "id": "exit-niri",
+          "label": "EXIT NIRI",
+          "key": "e"
+        }
+      ]
+    },
+    "controlCenter": {
+      "width": 408,
+      "height": 368,
+      "columns": 12,
+      "rowHeight": 64,
+      "moduleGap": 4,
+      "modules": [
+        {
+          "id": "wifi",
+          "type": "wifi",
+          "x": 0,
+          "y": 0,
+          "w": 6,
+          "h": 1
+        },
+        {
+          "id": "microphone",
+          "type": "microphone",
+          "x": 0,
+          "y": 1,
+          "w": 6,
+          "h": 1
+        },
+        {
+          "id": "background-apps",
+          "type": "background_apps",
+          "x": 6,
+          "y": 1,
+          "w": 6,
+          "h": 1
+        },
+        {
+          "id": "bluetooth",
+          "type": "bluetooth",
+          "x": 6,
+          "y": 0,
+          "w": 6,
+          "h": 1
+        },
+        {
+          "id": "brightness",
+          "type": "brightness",
+          "x": 0,
+          "y": 2,
+          "w": 2,
+          "h": 2.5
+        },
+        {
+          "id": "audio",
+          "type": "audio",
+          "x": 2,
+          "y": 2,
+          "w": 2,
+          "h": 2.5
+        }
       ]
     }
   },
   "topbar": {
     "left": [
-      { "id": "logo", "preset": "sys-niri" },
-      { "id": "workspaceDisplay", "preset": "dots" }
+      {
+        "id": "logo",
+        "preset": "sys-niri"
+      },
+      {
+        "id": "workspaceDisplay",
+        "preset": "dots"
+      }
     ],
     "center": [
-      { "id": "clock", "preset": "time-date" }
+      {
+        "id": "clock",
+        "preset": "time-date"
+      }
     ],
     "right": [
-      { "id": "battery", "preset": "status-label", "device": "BAT0" },
-      { "id": "separator", "preset": "space-1" },
-      { "id": "wifi", "preset": "icon-signal" },
-      { "id": "audio", "preset": "icon-volume", "sink": "@DEFAULT_AUDIO_SINK@" },
-      { "id": "separator", "preset": "space-1" },
-      { "id": "controlCenter", "preset": "default" }
+      {
+        "id": "battery",
+        "preset": "status-label",
+        "device": "BAT0"
+      },
+      {
+        "id": "separator",
+        "preset": "space-1"
+      },
+      {
+        "id": "wifi",
+        "preset": "icon-signal"
+      },
+      {
+        "id": "audio",
+        "preset": "icon-volume",
+        "sink": "@DEFAULT_AUDIO_SINK@"
+      },
+      {
+        "id": "separator",
+        "preset": "space-1"
+      },
+      {
+        "id": "controlCenter",
+        "preset": "default"
+      }
     ]
   },
   "hardware": {
@@ -50,10 +156,24 @@
     "audioSink": "@DEFAULT_AUDIO_SINK@"
   },
   "defaultApps": {
-    "browser": ["zen-browser"],
-    "terminal": ["kitty"],
-    "launcher": ["quickshell", "ipc", "call", "shell", "toggleLauncher"],
-    "fileManager": ["kitty", "-e", "yazi"],
-    "editor": ["code"]
+    "browser": [
+      "zen-browser"
+    ],
+    "terminal": [
+      "kitty"
+    ],
+    "launcher": [
+      "quickshell",
+      "ipc",
+      "call",
+      "shell",
+      "toggleLauncher"
+    ],
+    "fileManager": [
+      "yazi"
+    ],
+    "editor": [
+      "code"
+    ]
   }
 }

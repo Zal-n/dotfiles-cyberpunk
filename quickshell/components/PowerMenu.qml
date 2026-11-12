@@ -9,7 +9,6 @@ PanelWindow {
     id: powerMenu
 
     property var config: root.config.desktop?.powerMenu ?? ({})
-    property var toast: null
     readonly property string position: config.position ?? "bottom-center"
     readonly property int holdTime: Math.max(100, Number(config.holdTime ?? 1500))
     readonly property var entries: config.entries ?? defaultEntries
@@ -46,15 +45,6 @@ PanelWindow {
             });
         } else {
             cancelHold();
-        }
-    }
-
-    Process {
-        id: actionProcess
-        onExited: function(exitCode) {
-            if (exitCode !== 0 && powerMenu.toast) {
-                powerMenu.toast.showToast("POWER // ACTION FAILED", true);
-            }
         }
     }
 
@@ -266,7 +256,7 @@ PanelWindow {
     }
 
     function startHold(entry) {
-        if (actionProcess.running || heldEntry) {
+        if (heldEntry) {
             return;
         }
         heldEntry = entry;
@@ -279,36 +269,13 @@ PanelWindow {
         holdElapsed = holdTime;
     }
 
-    function commandFor(id) {
-        switch (id) {
-        case "poweroff":
-            return ["systemctl", "poweroff"];
-        case "restart":
-            return ["systemctl", "reboot"];
-        case "lock":
-            return ["loginctl", "lock-session"];
-        case "logout":
-            return ["loginctl", "terminate-user", Quickshell.env("USER")];
-        case "exit-niri":
-            return ["niri", "msg", "action", "quit"];
-        default:
-            return [];
-        }
-    }
-
     function triggerEntry(entry) {
-        var command = commandFor(entry.id);
-        if (command.length === 0) {
-            if (powerMenu.toast) {
-                powerMenu.toast.showToast("POWER // UNKNOWN ACTION", true);
-            }
+        var supportedActions = ["poweroff", "restart", "lock", "logout", "exit-niri"];
+        if (supportedActions.indexOf(entry.id) === -1) {
+            root.runSystemAction(entry.id);
             return;
         }
-        if (actionProcess.running) {
-            return;
-        }
-        actionProcess.command = command;
-        actionProcess.running = true;
+        root.runSystemAction(entry.id);
         powerMenu.close();
     }
 
