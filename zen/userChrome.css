@@ -1,0 +1,323 @@
+/*
+ * Cyberpunk Zen Browser theme
+ * Palette source:
+ *   quickshell/Theme.qml
+ *   theme/palette.json
+ */
+
+:root {
+  --cyber-bg: #0a0b10;
+  --cyber-surface: #121520;
+  --cyber-surface-accent: #1a1e2d;
+  --cyber-cyan: #00f0ff;
+  --cyber-magenta: #ff0055;
+  --cyber-yellow: #ffe600;
+  --cyber-green: #00ff66;
+  --cyber-fg: #e0e6ed;
+  --cyber-fg-dim: #565f89;
+  --cyber-border-glow: #00f0ff88;
+  --cyber-font: "JetBrainsMono Nerd Font", monospace;
+
+  /* Zen's own theme variables */
+  --zen-colors-primary: var(--cyber-cyan) !important;
+  --zen-colors-secondary: var(--cyber-surface) !important;
+  --zen-colors-tertiary: var(--cyber-bg) !important;
+  --zen-colors-border: var(--cyber-cyan) !important;
+  --zen-primary-color: var(--cyber-cyan) !important;
+  --zen-branding-bg: var(--cyber-bg) !important;
+  --zen-branding-dark: var(--cyber-bg) !important;
+  --zen-branding-paper: var(--cyber-bg) !important;
+  --zen-main-browser-background: var(--cyber-bg) !important;
+  --zen-main-browser-background-toolbar: var(--cyber-bg) !important;
+  --zen-themed-toolbar-bg-transparent: var(--cyber-bg) !important;
+  --zen-loading-progress-bar-color: var(--cyber-cyan) !important;
+  --zen-toolbar-element-bg: var(--cyber-surface) !important;
+  --toolbarbutton-background-color-hover: var(--cyber-surface-accent) !important;
+  --tab-background-color-selected: var(--cyber-surface) !important;
+  --tab-background-color-hover: var(--cyber-surface-accent) !important;
+  --zen-essential-tab-selected-bg: var(--cyber-surface) !important;
+  --zen-essential-tab-selected-bg-hover: var(--cyber-surface-accent) !important;
+  --zen-tabs-essential-glance-tab-background: var(--cyber-surface) !important;
+
+  color-scheme: dark;
+  font-family: var(--cyber-font) !important;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --cyber-bg: #eef2f7;
+    --cyber-surface: #ffffff;
+    --cyber-surface-accent: #dbe3ee;
+    --cyber-cyan: #007f91;
+    --cyber-magenta: #c90046;
+    --cyber-yellow: #9a7200;
+    --cyber-green: #087c42;
+    --cyber-fg: #17202b;
+    --cyber-fg-dim: #53627a;
+    --cyber-border-glow: #007f9166;
+
+    --zen-colors-primary: var(--cyber-cyan) !important;
+    --zen-colors-secondary: var(--cyber-surface) !important;
+    --zen-colors-tertiary: var(--cyber-bg) !important;
+    --zen-colors-border: var(--cyber-cyan) !important;
+    --zen-primary-color: var(--cyber-cyan) !important;
+    --zen-branding-bg: var(--cyber-bg) !important;
+    --zen-branding-dark: var(--cyber-bg) !important;
+    --zen-branding-paper: var(--cyber-bg) !important;
+    --zen-main-browser-background: var(--cyber-bg) !important;
+    --zen-main-browser-background-toolbar: var(--cyber-bg) !important;
+    --zen-themed-toolbar-bg-transparent: var(--cyber-bg) !important;
+    --zen-loading-progress-bar-color: var(--cyber-cyan) !important;
+    --zen-toolbar-element-bg: var(--cyber-surface) !important;
+    --toolbarbutton-background-color-hover: var(--cyber-surface-accent) !important;
+    --tab-background-color-selected: var(--cyber-surface) !important;
+    --tab-background-color-hover: var(--cyber-surface-accent) !important;
+    --zen-essential-tab-selected-bg: var(--cyber-surface) !important;
+    --zen-essential-tab-selected-bg-hover: var(--cyber-surface-accent) !important;
+    --zen-tabs-essential-glance-tab-background: var(--cyber-surface) !important;
+
+    color-scheme: light;
+  }
+}
+
+/* Main Zen surfaces */
+#browser,
+#zen-browser-window,
+#zen-main-app-wrapper,
+#zen-appcontent-wrapper,
+#zen-tabbox-wrapper,
+#tabbrowser-tabbox,
+#tabbrowser-tabpanels,
+#zen-browser-background,
+#sidebar-container,
+#vertical-tabs,
+#zen-sidebar,
+#zen-tabs-wrapper,
+#zen-essentials-container,
+#zen-pinned-tabs-container,
+#navigator-toolbox,
+#TabsToolbar,
+#nav-bar,
+#PersonalToolbar,
+#zen-appcontent-navbar-container,
+#sidebar-box,
+#sidebar-header {
+  background: var(--cyber-bg) !important;
+  color: var(--cyber-fg) !important;
+  border-color: var(--cyber-cyan) !important;
+}
+
+#zen-browser-background {
+  background: var(--cyber-bg) !important;
+  background-color: var(--cyber-bg) !important;
+}
+
+#zen-browser-background::before,
+#zen-browser-background::after {
+  background: var(--cyber-bg) !important;
+  opacity: 1 !important;
+}
+
+#zen-browser-background .zen-browser-grain {
+  display: none !important;
+}
+
+/* Vertical tabs and sidebar panels */
+#sidebar-container,
+#vertical-tabs,
+#zen-sidebar,
+#zen-tabs-wrapper,
+#zen-essentials-container,
+#zen-pinned-tabs-container,
+#zen-sidebar-top-buttons,
+#zen-sidebar-bottom-buttons,
+#zen-sidebar-foot-buttons,
+#zen-workspaces-button,
+#zen-essentials,
+#zen-current-workspace-indicator-container,
+#tabbrowser-tabs,
+#tabbrowser-arrowscrollbox,
+#TabsToolbar-customization-target,
+#titlebar,
+.zen-essentials-container,
+.zen-workspace-pinned-tabs-section,
+sidebar-main,
+sidebar-main > * {
+  background: var(--cyber-bg) !important;
+  background-color: var(--cyber-bg) !important;
+  background-image: none !important;
+  color: var(--cyber-fg) !important;
+  border-color: var(--cyber-cyan) !important;
+}
+
+#zen-tabs-wrapper .tabbrowser-tab,
+#zen-essentials-container .tabbrowser-tab,
+#zen-pinned-tabs-container .tabbrowser-tab {
+  background-color: transparent !important;
+}
+
+#zen-tabs-wrapper .tabbrowser-tab[selected="true"] .tab-background,
+#zen-essentials-container .tabbrowser-tab[selected="true"] .tab-background,
+#zen-pinned-tabs-container .tabbrowser-tab[selected="true"] .tab-background {
+  background: var(--cyber-surface) !important;
+  border-color: var(--cyber-magenta) !important;
+}
+
+#navigator-toolbox {
+  border-bottom: 1px solid var(--cyber-cyan) !important;
+  box-shadow: 0 1px 10px var(--cyber-border-glow) !important;
+}
+
+/* URL bar */
+#urlbar-background,
+#searchbar,
+.searchbar-textbox {
+  background: var(--cyber-surface) !important;
+  border: 1px solid var(--cyber-cyan) !important;
+  color: var(--cyber-fg) !important;
+  box-shadow: 0 0 8px var(--cyber-border-glow) !important;
+}
+
+#urlbar[focused="true"] > #urlbar-background {
+  border-color: var(--cyber-magenta) !important;
+  box-shadow: 0 0 10px var(--cyber-magenta) !important;
+}
+
+#urlbar-input,
+#urlbar-input::placeholder,
+.searchbar-textbox {
+  color: var(--cyber-fg) !important;
+}
+
+#urlbar-input::placeholder {
+  color: var(--cyber-fg-dim) !important;
+}
+
+/* Tabs */
+.tabbrowser-tab {
+  color: var(--cyber-fg-dim) !important;
+  font-family: var(--cyber-font) !important;
+}
+
+.tabbrowser-tab .tab-background {
+  background: transparent !important;
+  border: 1px solid transparent !important;
+}
+
+.tabbrowser-tab:hover .tab-background {
+  background: var(--cyber-surface-accent) !important;
+  border-color: var(--cyber-cyan) !important;
+}
+
+.tabbrowser-tab[selected="true"] {
+  color: var(--cyber-cyan) !important;
+}
+
+.tabbrowser-tab[selected="true"] .tab-background {
+  background: var(--cyber-surface) !important;
+  border: 1px solid var(--cyber-magenta) !important;
+  box-shadow: 0 0 8px var(--cyber-border-glow) !important;
+}
+
+.tabbrowser-tab .tab-label {
+  color: inherit !important;
+}
+
+.tabbrowser-tab .tab-close-button {
+  color: var(--cyber-magenta) !important;
+}
+
+/* Zen sidebar and workspace controls */
+#zen-sidebar-top-buttons,
+#zen-sidebar-bottom-buttons,
+#zen-tabs-wrapper,
+#zen-essentials-container,
+#zen-pinned-tabs-container {
+  background: var(--cyber-bg) !important;
+  color: var(--cyber-fg) !important;
+}
+
+#zen-sidebar-top-buttons toolbarbutton:hover,
+#zen-sidebar-bottom-buttons toolbarbutton:hover,
+#zen-tabs-wrapper toolbarbutton:hover {
+  background: var(--cyber-surface-accent) !important;
+  color: var(--cyber-cyan) !important;
+}
+
+#zen-sidebar-top-buttons toolbarbutton[checked="true"],
+#zen-sidebar-bottom-buttons toolbarbutton[checked="true"] {
+  color: var(--cyber-magenta) !important;
+}
+
+/* Menus, panels, and context menus */
+menupopup,
+panel,
+tooltip,
+.panel-arrowcontent {
+  background: var(--cyber-surface) !important;
+  border: 1px solid var(--cyber-cyan) !important;
+  color: var(--cyber-fg) !important;
+  font-family: var(--cyber-font) !important;
+  box-shadow: 0 0 12px var(--cyber-border-glow) !important;
+}
+
+menu:hover,
+menuitem:hover,
+toolbarbutton:hover,
+button:hover {
+  background: var(--cyber-surface-accent) !important;
+  color: var(--cyber-cyan) !important;
+}
+
+menuitem[disabled="true"],
+toolbarbutton[disabled="true"] {
+  color: var(--cyber-fg-dim) !important;
+}
+
+/* Library/sidebar text and separators */
+tree,
+treechildren,
+.sidebar-placesTree,
+separator {
+  color: var(--cyber-fg) !important;
+}
+
+toolbarseparator,
+separator {
+  border-color: var(--cyber-fg-dim) !important;
+}
+
+/* Native controls used by browser chrome */
+input,
+textarea,
+select,
+button {
+  background: var(--cyber-surface) !important;
+  border-color: var(--cyber-cyan) !important;
+  color: var(--cyber-fg) !important;
+  font-family: var(--cyber-font) !important;
+}
+
+input:focus,
+textarea:focus,
+select:focus,
+button:focus {
+  border-color: var(--cyber-magenta) !important;
+  outline: 1px solid var(--cyber-magenta) !important;
+}
+
+/* Status and attention colors */
+.notification-button,
+.identity-color-blue {
+  color: var(--cyber-cyan) !important;
+}
+
+.identity-color-red,
+.popup-notification-closebutton {
+  color: var(--cyber-magenta) !important;
+}
+
+.tab-throbber[busy="true"],
+.progress-bar {
+  background-color: var(--cyber-yellow) !important;
+}

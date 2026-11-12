@@ -12,6 +12,7 @@ The configuration combines a shared cyan, magenta, and yellow palette across the
 - **Kitty**: JetBrains Mono Nerd Font and synchronized terminal colors
 - **Fish**: themed command-line colors plus `fetch` and `top` aliases
 - **Rofi**: cyberpunk launcher theme
+- **Zen Browser**: browser chrome theme using the shared cyberpunk palette
 - **Theme**: shared colors in `theme/palette.json`
 - **Wallpaper**: included `wallpaper.png`
 
@@ -95,6 +96,20 @@ quickshell ipc call wallpaper set "$HOME/.config/quickshell/wallpaper.png"
 ```
 
 - Update status bar modules in `waybar/config.jsonc` and their appearance in `waybar/style.css`.
+
+### Zen Browser
+
+The Zen theme is in `zen/userChrome.css`. Open `about:support`, click **Open Profile Folder**,
+create a `chrome` directory, and copy the file there:
+
+```bash
+mkdir -p "$PROFILE/chrome"
+cp zen/userChrome.css "$PROFILE/chrome/userChrome.css"
+```
+
+Set `toolkit.legacyUserProfileCustomizations.stylesheets` to `true` in `about:config`, then
+restart Zen. The CSS uses the system `prefers-color-scheme` setting and switches between dark
+and light variants automatically.
 
 ## Notes
 
