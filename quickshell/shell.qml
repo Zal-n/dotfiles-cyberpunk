@@ -349,6 +349,13 @@ ShellRoot {
         root.saveConfig(cfg);
       }
     }
+    IpcHandler {
+      target: "clipboard"
+
+      function copy(text: string): void {
+        Quickshell.exeDetached([wl-copy, text]);
+      }
+    }
 
     BackgroundManager {
       wallpaperPath: root.config.desktop?.wallpaper ?? ""
@@ -411,4 +418,5 @@ ShellRoot {
     PowerMenu {
       id: powerMenu
     }
+
 }
