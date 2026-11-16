@@ -163,7 +163,7 @@ PanelWindow {
             property string profileName: modelData
             property bool selected: profileName === BatteryController.activeProfile
             property bool first: index === 0
-            property bool last: index === popup.powerProfiles.length - 1
+            property bool last: index === BatteryController.powerProfiles.length - 1
 
             Layout.fillWidth: true
             implicitHeight: 32

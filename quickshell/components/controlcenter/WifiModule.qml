@@ -52,7 +52,7 @@ Item {
             font.bold: true
         }
         Text {
-            text: WifiController?.connected ? wifi.activeName : "OFFLINE"
+            text: WifiController?.connected ? WifiController.activeName : "OFFLINE"
             color: Theme.fg
             font.family: Theme.fontFamily
             font.pixelSize: 11
