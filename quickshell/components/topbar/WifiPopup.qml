@@ -181,9 +181,19 @@ PanelWindow {
                         height: 26
                         color: hoverArea.containsMouse ? Theme.surfaceAccent : "transparent"
 
+                        MouseArea {
+                            id: hoverArea
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: WifiController.selectNetwork(modelData)
+                        }
+
                         Text {
                             anchors.left: parent.left
                             anchors.leftMargin: 6
+                            anchors.right: manageBtn.visible ? manageBtn.left : parent.right
+                            anchors.rightMargin: 6
                             anchors.verticalCenter: parent.verticalCenter
                             text: (modelData.connected ? "● " : "○ ")
                                 + modelData.ssid
@@ -195,15 +205,34 @@ PanelWindow {
                             font.family: Theme.fontFamily
                             font.pixelSize: 10
                             elide: Text.ElideRight
-                            width: parent.width - 12
                         }
 
-                        MouseArea {
-                            id: hoverArea
-                            anchors.fill: parent
-                            hoverEnabled: true
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: WifiController.openConnectModal(modelData)
+                        // Manage button on saved networks (to Forget or Change Password)
+                        Rectangle {
+                            id: manageBtn
+                            visible: modelData.saved && !modelData.unavailable
+                            anchors.right: parent.right
+                            anchors.rightMargin: 4
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: 20
+                            height: 20
+                            color: manageHover.containsMouse ? Theme.surface : "transparent"
+
+                            Text {
+                                anchors.centerIn: parent
+                                text: "⚙"
+                                color: Theme.fgDim
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 11
+                            }
+
+                            MouseArea {
+                                id: manageHover
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: WifiController.openConnectModal(modelData)
+                            }
                         }
                     }
                 }

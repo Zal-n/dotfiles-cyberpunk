@@ -167,7 +167,11 @@ Scope {
 
     Process {
         id: savedProcess
-        command: ["nmcli", "-t", "-f", "NAME,TYPE,802-11-wireless.ssid", "connection", "show"]
+        command: [
+            "sh", "-c",
+            "nmcli -t -f UUID,TYPE connection show | awk -F: '$2 == \"802-11-wireless\" { print $1 }' | " +
+            "xargs -r nmcli -t -f connection.id,802-11-wireless.ssid connection show"
+        ]
         running: true
         stdout: StdioCollector {
             onStreamFinished: {
@@ -378,16 +382,48 @@ Process {
     function _parseSavedNetworks(output) {
         var result = [];
         var lines = output.trim().split(/\r?\n/);
+        var currentName = "";
+
         for (var i = 0; i < lines.length; i++) {
-            if (!lines[i]) continue;
-            var fields = _parseEscapedFields(lines[i]);
-            if (fields[1] !== "802-11-wireless") continue;
-            result.push({
-                "name": fields[0] ?? "",
-                "ssid": fields[2] || fields[0] || ""
-            });
+            var line = lines[i];
+            if (!line) continue;
+
+            if (line.startsWith("connection.id:")) {
+                currentName = line.slice("connection.id:".length).trim();
+            } else if (line.startsWith("802-11-wireless.ssid:")) {
+                var ssid = line.slice("802-11-wireless.ssid:".length).trim();
+                if (currentName || ssid) {
+                    result.push({
+                        "name": currentName || ssid,
+                        "ssid": ssid || currentName
+                    });
+                }
+                currentName = "";
+            }
         }
         return result;
+    }
+
+    // Smart entry point when clicking a network row in WifiPopup
+    function selectNetwork(network) {
+        if (!network) return;
+        clearStatus();
+
+        // Out-of-range saved network -> open modal so user can Forget it
+        if (network.unavailable) {
+            openConnectModal(network);
+            return;
+        }
+
+        // Already saved OR open network -> connect immediately without modal
+        var isOpen = (network.security ?? "") === "";
+        if (isSaved(network.ssid) || isOpen) {
+            connect(network, "", "");
+            return;
+        }
+
+        // Secured new network -> open credential modal
+        openConnectModal(network);
     }
 
     function _rebuildDisplayNetworks() {
