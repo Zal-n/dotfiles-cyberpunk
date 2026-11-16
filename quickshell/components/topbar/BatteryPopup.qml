@@ -54,7 +54,7 @@ PanelWindow {
     anchors.right: parent.right
     anchors.topMargin: Theme.barHeight
     width: 260
-    height: 200
+    height: 216
     z: 1
 
     MouseArea {
@@ -106,6 +106,19 @@ PanelWindow {
           font.pixelSize: 11
         }
         Text {
+          text: {
+            if (BatteryController.remainingMinutes < 0) {
+              return BatteryController.isCharging ? "TO_FULL\t// CALCULATING..." : "REMAINING\t// AC / IDLE";
+            }
+            return BatteryController.isCharging
+                ? "TO_FULL\t// " + BatteryController.timeRemainingText
+                : "REMAINING\t// " + BatteryController.timeRemainingText;
+          }
+          color: BatteryController.isCharging ? Theme.yellow : Theme.fg
+          font.family: Theme.fontFamily
+          font.pixelSize: 11
+        }
+        Text {
           text: BatteryController.capacityWh >= 0
               ? "CAPACITY\t// " + BatteryController.capacityWh.toFixed(1) + "Wh"
               : "CAPACITY // UNKNOWN"
@@ -150,7 +163,7 @@ PanelWindow {
             property string profileName: modelData
             property bool selected: profileName === BatteryController.activeProfile
             property bool first: index === 0
-            property bool last: index === BatteryController.powerProfiles.length - 1
+            property bool last: index === popup.powerProfiles.length - 1
 
             Layout.fillWidth: true
             implicitHeight: 32
