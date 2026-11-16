@@ -4,6 +4,7 @@ import Quickshell.Wayland
 import Quickshell.Io
 import "./components"
 import "./components/topbar"
+import "./services"
 
 ShellRoot {
     id: root
@@ -101,8 +102,6 @@ ShellRoot {
         reloadToast.showToast("CONFIG // RELOADED", false);
       }
       onLoadFailed: root.createDefaultConfig(error)
-      JsonAdapter {
-      } 
     }
 
     FileView {
@@ -227,6 +226,8 @@ ShellRoot {
       root.launcherOpen = false;
       root.settingsOpen = false;
       topbar.closePopups();
+      WifiController.closeConnectModal();
+      powerMenu.close();
     }
 
     Process {
@@ -291,13 +292,14 @@ ShellRoot {
         return;
       }
       closeTransientWindows();
-      var escapedCommand = command.map(function(part) {
+      /*var escapedCommand = command.map(function(part) {
         return "'" + part.replace(/'/g, "'\\''") + "'";
       }).join(" ");
       defaultAppProcess.command = [
         "sh", "-c",
         escapedCommand + " >/dev/null 2>&1 &"
-      ];
+      ];*/
+      Quickshell.execDetached(command);
       defaultAppProcess.running = true;
     }
 
@@ -353,7 +355,7 @@ ShellRoot {
       target: "clipboard"
 
       function copy(text: string): void {
-        Quickshell.exeDetached([wl-copy, text]);
+        Quickshell.execDetached(["wl-copy", text]);
       }
     }
 
