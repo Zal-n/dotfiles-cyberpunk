@@ -23,6 +23,9 @@ Scope {
     property string statusMessage: ""
     property bool statusIsError: false
 
+    property bool connectModalOpen: false
+    property var modalNetwork: null
+
     // --- Internal Action State ---
     property string _targetSsid: ""
     property string _targetPassword: ""
