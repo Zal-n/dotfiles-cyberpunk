@@ -419,4 +419,6 @@ ShellRoot {
       id: powerMenu
     }
 
+    WifiConnectPopup { }
+
 }
