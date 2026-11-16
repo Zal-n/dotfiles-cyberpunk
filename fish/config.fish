@@ -23,5 +23,5 @@ if status is-interactive
     alias szamrend='ssh s1uiuj@szamrend.inf.elte.hu'
     alias fetch="fastfetch"
     alias top="btop"
-
+    alias fp="git fetch && git pull"
 end
