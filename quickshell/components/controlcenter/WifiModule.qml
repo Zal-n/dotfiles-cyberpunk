@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import "../.."
+import "../../services"
 
 Item {
     property var topbar: null
@@ -14,8 +15,8 @@ Item {
     Text {
         visible: compact
         anchors.centerIn: parent
-        text: wifi?.connected ? "󰤨" : "󰤭"
-        color: wifi?.connected ? Theme.cyan : Theme.magenta
+        text: WifiController?.connected ? "󰤨" : "󰤭"
+        color: WifiController?.connected ? Theme.cyan : Theme.magenta
         font.family: Theme.fontFamily
         font.pixelSize: 24
     }
@@ -25,14 +26,14 @@ Item {
         anchors.fill: parent
         spacing: 8
         Text {
-            text: wifi?.connected ? "󰤨" : "󰤭"
-            color: wifi?.connected ? Theme.cyan : Theme.magenta
+            text: WifiController?.connected ? "󰤨" : "󰤭"
+            color: WifiController?.connected ? Theme.cyan : Theme.magenta
             font.family: Theme.fontFamily
             font.pixelSize: 24
         }
         Text {
             Layout.fillWidth: true
-            text: wifi?.connected ? wifi.ssid : "OFFLINE"
+            text: WifiController?.connected ? WifiController.activeName : "OFFLINE"
             color: Theme.fg
             font.family: Theme.fontFamily
             font.pixelSize: 11
@@ -46,12 +47,12 @@ Item {
         spacing: 4
         Text {
             text: "WIFI"
-            color: wifi?.connected ? Theme.cyan : Theme.magenta
+            color: WifiController?.connected ? Theme.cyan : Theme.magenta
             font.family: Theme.fontFamily
             font.bold: true
         }
         Text {
-            text: wifi?.connected ? wifi.ssid : "OFFLINE"
+            text: WifiController?.connected ? wifi.activeName : "OFFLINE"
             color: Theme.fg
             font.family: Theme.fontFamily
             font.pixelSize: 11
@@ -59,13 +60,12 @@ Item {
             Layout.fillWidth: true
         }
         Text {
-            text: wifi?.radioEnabled ? "RADIO // ON" : "RADIO // OFF"
+            text: WifiController?.radioEnabled ? "RADIO // ON" : "RADIO // OFF"
             color: Theme.fgDim
             font.family: Theme.fontFamily
             font.pixelSize: 10
         }
     }
-
     MouseArea {
         anchors.fill: parent
         onClicked: if (wifi) wifi.popupOpen = true
