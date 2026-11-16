@@ -2,17 +2,14 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 import Quickshell
-import Quickshell.Io
 import Quickshell.Wayland
 import "../.."
+import "../../services"
 
 PanelWindow {
   id: popup
   property var battery: null
   property var toast: null
-  property var powerProfiles: []
-  property string activeProfile: ""
-  property string pendingProfile: ""
 
   visible: battery !== null && battery.popupOpen
   WlrLayershell.layer: WlrLayer.Overlay
@@ -27,9 +24,28 @@ PanelWindow {
   color: "transparent"
   exclusionMode: ExclusionMode.Ignore
 
+  onVisibleChanged: {
+    if (visible) {
+      BatteryController.refreshBattery();
+      BatteryController.refreshProfiles();
+    }
+  }
+
+  Connections {
+    target: BatteryController
+    function onIsChargingChanged() { popupBackground.requestPaint(); }
+    function onProfileChanged(profileName, success) {
+      if (success) {
+        popup.toast?.showToast("POWER // " + profileName.toUpperCase() + " ACTIVE", false);
+      } else {
+        popup.toast?.showToast("POWER // PROFILE CHANGE FAILED", true);
+      }
+    }
+  }
+
   MouseArea {
     anchors.fill: parent
-    onClicked: popup.battery.popupOpen = false
+    onClicked: if (popup.battery) popup.battery.popupOpen = false
   }
 
   Item {
@@ -44,11 +60,12 @@ PanelWindow {
     MouseArea {
       anchors.fill: parent
       z: -1
+      onClicked: mouse => mouse.accepted = true
     }
 
     Canvas {
-      anchors.fill: parent
       id: popupBackground
+      anchors.fill: parent
       onPaint: {
         var ctx = getContext("2d");
         var cut = Theme.cornerCutSize;
@@ -63,7 +80,7 @@ PanelWindow {
         ctx.fillStyle = Theme.bg;
         ctx.fill();
         ctx.lineWidth = 1;
-        ctx.strokeStyle = popup.battery?.isCharging ? Theme.yellow : Theme.cyan;
+        ctx.strokeStyle = BatteryController.isCharging ? Theme.yellow : Theme.cyan;
         ctx.stroke();
       }
     }
@@ -72,81 +89,83 @@ PanelWindow {
       anchors.fill: parent
       anchors.margins: 12
       spacing: 6
+
       ColumnLayout {
         Text {
-          text: popup.battery?.isCharging ? "BATTERY // CHARGING" : "BATTERY // ON POWER"
-          color: popup.battery?.isCharging ? Theme.yellow : Theme.cyan
+          text: BatteryController.isCharging ? "BATTERY // CHARGING" : "BATTERY // ON POWER"
+          color: BatteryController.isCharging ? Theme.yellow : Theme.cyan
           font.family: Theme.fontFamily
           font.bold: true
         }
         Text {
-          text: popup.battery && popup.battery.level >= 0
-              ? "CHARGE\t// " + popup.battery.level + "%"
+          text: BatteryController.level >= 0
+              ? "CHARGE\t// " + BatteryController.level + "%"
               : "CHARGE\t|| UNKNOWN"
           color: Theme.fg
           font.family: Theme.fontFamily
           font.pixelSize: 11
         }
         Text {
-          text: popup.battery && popup.battery.capacity >= 0
-              ? "CAPACITY\t// " + popup.battery.capacity/1000000 + "Wh"
+          text: BatteryController.capacityWh >= 0
+              ? "CAPACITY\t// " + BatteryController.capacityWh.toFixed(1) + "Wh"
               : "CAPACITY // UNKNOWN"
           color: Theme.fg
           font.family: Theme.fontFamily
           font.pixelSize: 11
         }
         Text {
-          text: popup.battery && popup.battery.health >= 0
-              ? "HEALTH\t// " + popup.battery.health + "%"
+          text: BatteryController.health >= 0
+              ? "HEALTH\t// " + BatteryController.health.toFixed(0) + "%"
               : "HEALTH // UNKNOWN"
           color: Theme.fg
           font.family: Theme.fontFamily
           font.pixelSize: 11
         }
         Text {
-          text: popup.battery && popup.battery.powerDraw >= 0
-              ? "PWR_DRAW\t// " + (popup.battery.isCharging ? "+" : "") + (popup.battery.powerDraw / 10).toFixed(2) + "W"
-              : popup.battery && popup.battery.powerDraw < 0
-              ? "PWR_DRAW\t// " + (popup.battery.powerDraw / 10).toFixed(2) + "W"
+          text: BatteryController.powerDrawWatts !== -1
+              ? "PWR_DRAW\t// " + (BatteryController.powerDrawWatts > 0 ? "+" : "") + BatteryController.powerDrawWatts.toFixed(2) + "W"
               : "PWR_DRAW // UNKNOWN"
           color: Theme.fg
           font.family: Theme.fontFamily
           font.pixelSize: 11
         }
         Text {
-          text: popup.battery ? popup.battery.status.toUpperCase() : "UNKNOWN"
+          text: BatteryController.status.toUpperCase()
           color: Theme.fgDim
           font.family: Theme.fontFamily
           font.pixelSize: 10
         }
       }
+
       RowLayout {
-        Layout.fillWidth: true 
+        Layout.fillWidth: true
         spacing: 6
 
         Repeater {
-          model: popup.powerProfiles
+          model: BatteryController.powerProfiles
           delegate: Item {
+            required property string modelData
+            required property int index
+
             property string profileName: modelData
-            property bool selected: profileName === popup.activeProfile
+            property bool selected: profileName === BatteryController.activeProfile
             property bool first: index === 0
-            property bool last: index === popup.powerProfiles.length - 1
+            property bool last: index === BatteryController.powerProfiles.length - 1
+
             Layout.fillWidth: true
             implicitHeight: 32
+
+            onSelectedChanged: profileBackground.requestPaint()
 
             Canvas {
               id: profileBackground
               anchors.fill: parent
-              Connections {
-                target: popup
-                function onActiveProfileChanged() { profileBackground.requestPaint(); }
-              }
               onPaint: {
                 var ctx = getContext("2d");
                 var cut = Theme.cornerCutSizeSmall;
                 ctx.clearRect(0, 0, width, height);
                 ctx.beginPath();
-                ctx.moveTo(first ? 0 : 0, 0);
+                ctx.moveTo(0, 0);
                 ctx.lineTo(last ? width - cut : width, 0);
                 if (last) ctx.lineTo(width, cut);
                 ctx.lineTo(width, height);
@@ -173,13 +192,13 @@ PanelWindow {
             MouseArea {
               anchors.fill: parent
               cursorShape: Qt.PointingHandCursor
-              onClicked: popup.selectProfile(profileName)
+              onClicked: BatteryController.selectProfile(profileName)
             }
           }
         }
 
         Text {
-          visible: popup.powerProfiles.length === 0
+          visible: BatteryController.powerProfiles.length === 0
           text: "POWER PROFILES // UNAVAILABLE"
           color: Theme.fgDim
           font.family: Theme.fontFamily
@@ -187,55 +206,5 @@ PanelWindow {
         }
       }
     }
-  }
-
-  Process {
-    id: profileListProcess
-    command: ["powerprofilesctl", "list"]
-    running: true
-    stdout: StdioCollector {
-      onStreamFinished: {
-        var profiles = [];
-        var selected = "";
-        text.split(/\r?\n/).forEach(function(line) {
-          var match = line.match(/^(?:\s*\*\s+| {2})([a-z][a-z0-9_-]*)\s*:\s*$/i);
-          if (match) {
-            var profileName = match[1];
-            if (profiles.indexOf(profileName) === -1) {
-              profiles.push(profileName);
-            }
-            if (/^\s*\*/.test(line)) {
-              selected = profileName;
-            }
-          }
-        });
-        profiles.reverse();
-        popup.powerProfiles = profiles;
-        popup.activeProfile = selected || (profiles.length > 0 ? profiles[0] : "");
-      }
-    }
-    stderr: StdioCollector {}
-  }
-
-  Process {
-    id: profileSetProcess
-    command: ["powerprofilesctl", "set", popup.pendingProfile]
-    onExited: function(exitCode) {
-      if (exitCode === 0) {
-        popup.activeProfile = popup.pendingProfile;
-        popup.toast?.showToast("POWER // " + popup.pendingProfile.toUpperCase() + " ACTIVE", false);
-        profileListProcess.running = true;
-      } else {
-        popup.toast?.showToast("POWER // PROFILE CHANGE FAILED", true);
-      }
-    }
-  }
-
-  function selectProfile(profile) {
-    if (profile === activeProfile || profileSetProcess.running) {
-      return;
-    }
-    pendingProfile = profile;
-    profileSetProcess.running = true;
   }
 }

@@ -223,7 +223,7 @@ PanelWindow {
                                 text: "⚙"
                                 color: Theme.fgDim
                                 font.family: Theme.fontFamily
-                                font.pixelSize: 11
+                                font.pixelSize: 24
                             }
 
                             MouseArea {
