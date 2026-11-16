@@ -228,6 +228,7 @@ ShellRoot {
       topbar.closePopups();
       WifiController.closeConnectModal();
       powerMenu.close();
+      BluetoothController.popupOpen = false;
     }
 
     Process {
@@ -292,13 +293,6 @@ ShellRoot {
         return;
       }
       closeTransientWindows();
-      /*var escapedCommand = command.map(function(part) {
-        return "'" + part.replace(/'/g, "'\\''") + "'";
-      }).join(" ");
-      defaultAppProcess.command = [
-        "sh", "-c",
-        escapedCommand + " >/dev/null 2>&1 &"
-      ];*/
       Quickshell.execDetached(command);
       defaultAppProcess.running = true;
     }
@@ -422,5 +416,6 @@ ShellRoot {
     }
 
     WifiConnectPopup { }
+    BluetoothPopup { }
 
 }
