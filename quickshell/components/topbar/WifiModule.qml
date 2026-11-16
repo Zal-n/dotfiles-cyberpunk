@@ -3,6 +3,7 @@ import Quickshell
 import Quickshell.Io
 import Quickshell.Wayland
 import "../.."
+import "../../services"
 
 Item {
     id: wifi

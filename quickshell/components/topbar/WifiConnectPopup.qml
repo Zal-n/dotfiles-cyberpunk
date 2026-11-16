@@ -2,6 +2,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Wayland
 import "../.."
+import ".."
 import "../../services"
 
 PanelWindow {
