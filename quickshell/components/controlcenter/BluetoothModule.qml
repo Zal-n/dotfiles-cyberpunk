@@ -9,6 +9,19 @@ Item {
     property real gridHeight: 2
     readonly property bool compact: gridWidth <= 1 && gridHeight <= 1
 
+    MouseArea {
+        anchors.fill: parent
+        acceptedButtons: Qt.LeftButton | Qt.RightButton
+        cursorShape: Qt.PointingHandCursor
+        onClicked: mouse => {
+            if (mouse.button === Qt.RightButton) {
+                BluetoothController.popupOpen = true;
+            } else {
+                BluetoothController.togglePower();
+            }
+        }
+    }
+
     ColumnLayout {
         visible: compact
         anchors.fill: parent
@@ -37,8 +50,9 @@ Item {
             Item { Layout.fillWidth: true }
             Rectangle {
                 visible: BluetoothController.powered
-                width: 22
+                width: 24
                 height: 18
+                z: 2
                 color: listBtnHover.containsMouse ? Theme.surfaceAccent : "transparent"
                 border.color: Theme.fgDim
                 border.width: 1
@@ -54,10 +68,7 @@ Item {
                     anchors.fill: parent
                     hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
-                    onClicked: {
-                        root.controlCenterOpen = false;
-                        BluetoothController.popupOpen = true;
-                    }
+                    onClicked: BluetoothController.popupOpen = true
                 }
             }
         }
@@ -88,21 +99,6 @@ Item {
             color: Theme.fgDim
             font.family: Theme.fontFamily
             font.pixelSize: 9
-        }
-    }
-
-    MouseArea {
-        anchors.fill: parent
-        z: -1
-        acceptedButtons: Qt.LeftButton | Qt.RightButton
-        cursorShape: Qt.PointingHandCursor
-        onClicked: mouse => {
-            if (mouse.button === Qt.RightButton) {
-                root.controlCenterOpen = false;
-                BluetoothController.popupOpen = true;
-            } else {
-                BluetoothController.togglePower();
-            }
         }
     }
 }

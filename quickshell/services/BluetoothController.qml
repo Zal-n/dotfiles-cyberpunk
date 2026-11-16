@@ -12,48 +12,37 @@ Scope {
     property bool discovering: false
     property bool popupOpen: false
 
-    property var devices: []              // Full sorted list: connected -> paired -> discovered
-    property var connectedDevices: []     // Subset of devices currently connected
+    property var devices: []
+    property var connectedDevices: []
     readonly property int connectedCount: connectedDevices.length
     readonly property string primaryDeviceName: connectedDevices.length > 0
         ? connectedDevices[0].name
         : ""
 
-    property string busyMac: ""           // MAC address currently connecting/pairing/removing
+    property string busyMac: ""
     property string statusMessage: ""
     property bool statusIsError: false
 
-    // --- 1. Event-Driven BlueZ Monitor (Zero Idle Polling) ---
-    // Interactive bluetoothctl session stays open and prints [CHG], [NEW], [DEL] events live
+    // --- 1. Event-Driven BlueZ D-Bus Monitor (No PTY required) ---
     Process {
         id: monitorProcess
-        command: ["bluetoothctl"]
+        command: [
+            "dbus-monitor", "--system",
+            "type='signal',sender='org.bluez'"
+        ]
         running: true
-        stdinEnabled: true
         stdout: SplitParser {
             onRead: line => {
-                // Strip ANSI color escape sequences emitted by bluetoothctl
-                var clean = line.replace(/\x1b\[[0-9;]*[a-zA-Z]/g, "").trim();
-                if (!clean) return;
-
-                if (clean.indexOf("Powered:") !== -1
-                        || clean.indexOf("Discovering:") !== -1
-                        || clean.indexOf("Connected:") !== -1
-                        || clean.indexOf("Paired:") !== -1
-                        || clean.indexOf("Battery Percentage:") !== -1
-                        || clean.indexOf("[NEW] Device") !== -1
-                        || clean.indexOf("[DEL] Device") !== -1) {
+                if (line.indexOf("org.bluez.Adapter1") !== -1
+                        || line.indexOf("org.bluez.Device1") !== -1
+                        || line.indexOf("org.bluez.Battery1") !== -1
+                        || line.indexOf("InterfacesAdded") !== -1
+                        || line.indexOf("InterfacesRemoved") !== -1) {
                     eventDebounce.restart();
                 }
             }
         }
-        onExited: function(exitCode) {
-            if (exitCode === 127) {
-                root.available = false;
-                return;
-            }
-            monitorRestartTimer.start();
-        }
+        onExited: monitorRestartTimer.start()
     }
 
     Timer {
@@ -70,7 +59,6 @@ Scope {
         onTriggered: monitorProcess.running = true
     }
 
-    // Auto-stop discovery after 15s when popup is open so radio doesn't stay in scan mode
     Timer {
         id: scanTimeoutTimer
         interval: 15000
@@ -85,7 +73,8 @@ Scope {
         running: true
         stdout: StdioCollector {
             onStreamFinished: {
-                if (!text || text.indexOf("No default controller available") !== -1) {
+                var clean = text.replace(/\x1b\[[0-9;]*[a-zA-Z]/g, "");
+                if (!clean || clean.indexOf("No default controller available") !== -1) {
                     root.available = false;
                     root.powered = false;
                     root.discovering = false;
@@ -94,8 +83,8 @@ Scope {
                     return;
                 }
                 root.available = true;
-                root.powered = /Powered:\s+yes/i.test(text);
-                root.discovering = /Discovering:\s+yes/i.test(text);
+                root.powered = /Powered:\s+yes/i.test(clean);
+                root.discovering = /Discovering:\s+yes/i.test(clean);
 
                 if (root.powered) {
                     if (!deviceListProcess.running) deviceListProcess.running = true;
@@ -105,16 +94,22 @@ Scope {
                 }
             }
         }
+        stderr: StdioCollector {
+            onStreamFinished: {
+                if (text.trim().length > 0) {
+                    console.log("BluetoothController show stderr:", text.trim());
+                }
+            }
+        }
     }
 
-    // Queries all known devices + detailed info (Connected, Paired, Trusted, Icon, Battery)
     Process {
         id: deviceListProcess
         command: [
             "sh", "-c",
-            "bluetoothctl devices | awk '/^Device / { print $2 }' | while read -r mac; do " +
-            "  echo \"===DEVICE===$mac\"; " +
-            "  bluetoothctl info \"$mac\"; " +
+            "bluetoothctl devices | sed -E 's/\\x1b\\[[0-9;]*[a-zA-Z]//g' | awk '/^Device / { print $2 }' | while read -r mac; do " +
+            "  printf '===DEVICE===%s\\n' \"$mac\"; " +
+            "  bluetoothctl info \"$mac\" | sed -E 's/\\x1b\\[[0-9;]*[a-zA-Z]//g'; " +
             "done"
         ]
         stdout: StdioCollector {
@@ -125,57 +120,41 @@ Scope {
     // --- 3. User Actions ---
     Process {
         id: powerProcess
-        property bool targetState: false
-        command: ["bluetoothctl", "power", targetState ? "on" : "off"]
         onExited: function(exitCode) {
             if (exitCode === 0) {
-                root.powered = targetState;
                 root.refreshAll();
             } else {
-                root._setStatus("POWER TOGGLE FAILED", true);
+                root._setStatus("POWER TOGGLE FAILED (RFKILL?)", true);
             }
         }
     }
 
     Process {
         id: scanProcess
-        property bool enable: true
-        command: ["bluetoothctl", "--timeout", "15", "scan", enable ? "on" : "off"]
+        command: ["bluetoothctl", "--timeout", "15", "scan", "on"]
         onRunningChanged: {
-            if (running && enable) {
+            if (running) {
                 root.discovering = true;
                 scanTimeoutTimer.restart();
-            } else if (!running) {
+            } else {
                 root.discovering = false;
+                root.refreshAll();
             }
         }
     }
 
     Process {
         id: deviceActionProcess
-        property string action: ""   // "connect" | "disconnect" | "pair" | "remove"
-        property string mac: ""
-        command: {
-            if (action === "pair") {
-                return [
-                    "sh", "-c",
-                    "bluetoothctl pair \"$1\" && bluetoothctl trust \"$1\" && bluetoothctl connect \"$1\"",
-                    "bt-pair", mac
-                ];
-            }
-            return ["bluetoothctl", action, mac];
-        }
         stdout: StdioCollector { id: actionStdout }
         stderr: StdioCollector { id: actionStderr }
         onExited: function(exitCode) {
-            var finishedMac = mac;
-            var finishedAction = action;
             root.busyMac = "";
             if (exitCode === 0) {
-                root._setStatus(finishedAction.toUpperCase() + " // OK", false);
+                root._setStatus("DEVICE UPDATED", false);
                 root.refreshAll();
             } else {
-                var raw = (actionStderr.text || actionStdout.text || "").trim();
+                var raw = (actionStderr.text || actionStdout.text || "")
+                    .replace(/\x1b\[[0-9;]*[a-zA-Z]/g, "").trim();
                 var lines = raw.split(/\r?\n/);
                 var lastLine = lines.length > 0 ? lines[lines.length - 1] : "ACTION FAILED";
                 root._setStatus(lastLine.toUpperCase(), true);
@@ -191,13 +170,15 @@ Scope {
 
     function togglePower() {
         if (!available || powerProcess.running) return;
-        powerProcess.targetState = !powered;
+        var nextState = !powered;
+        // Optimistic UI update + explicit command assignment
+        powered = nextState;
+        powerProcess.command = ["bluetoothctl", "power", nextState ? "on" : "off"];
         powerProcess.running = true;
     }
 
     function startScan() {
         if (!powered || scanProcess.running) return;
-        scanProcess.enable = true;
         scanProcess.running = true;
     }
 
@@ -209,26 +190,29 @@ Scope {
     }
 
     function toggleDevice(device) {
-        if (!device || busyMac.length > 0) return;
+        if (!device || busyMac.length > 0 || deviceActionProcess.running) return;
         clearStatus();
         busyMac = device.mac;
-        deviceActionProcess.mac = device.mac;
+
         if (device.connected) {
-            deviceActionProcess.action = "disconnect";
+            deviceActionProcess.command = ["bluetoothctl", "disconnect", device.mac];
         } else if (device.paired) {
-            deviceActionProcess.action = "connect";
+            deviceActionProcess.command = ["bluetoothctl", "connect", device.mac];
         } else {
-            deviceActionProcess.action = "pair";
+            deviceActionProcess.command = [
+                "sh", "-c",
+                "bluetoothctl pair \"$1\" && bluetoothctl trust \"$1\" && bluetoothctl connect \"$1\"",
+                "bt-pair", device.mac
+            ];
         }
         deviceActionProcess.running = true;
     }
 
     function removeDevice(device) {
-        if (!device || busyMac.length > 0) return;
+        if (!device || busyMac.length > 0 || deviceActionProcess.running) return;
         clearStatus();
         busyMac = device.mac;
-        deviceActionProcess.mac = device.mac;
-        deviceActionProcess.action = "remove";
+        deviceActionProcess.command = ["bluetoothctl", "remove", device.mac];
         deviceActionProcess.running = true;
     }
 
@@ -276,14 +260,12 @@ Scope {
                 } else if (line.startsWith("Connected:")) {
                     isConnected = /yes/i.test(line);
                 } else if (line.startsWith("Battery Percentage:")) {
-                    // Format: "Battery Percentage: 0x55 (85)"
                     var batMatch = line.match(/\((\d+)\)/);
                     if (batMatch) battery = Number.parseInt(batMatch[1], 10);
                 }
             }
 
             var displayName = alias || name || mac;
-            // Filter out unnamed raw BLE beacons unless already paired/connected
             if (!alias && !name && !paired && !isConnected) continue;
 
             var item = {
@@ -299,7 +281,6 @@ Scope {
             if (isConnected) connected.push(item);
         }
 
-        // Sort: Connected first -> Paired second -> Discovered alphabetically
         parsed.sort(function(a, b) {
             if (a.connected !== b.connected) return a.connected ? -1 : 1;
             if (a.paired !== b.paired) return a.paired ? -1 : 1;
