@@ -1,0 +1,7 @@
+[[plugin.deps]]
+use = "grappas/wl-clipboard"
+rev = "8cc5524"
+hash = "5c587834c274dca9059092714ece1f18"
+
+[flavor]
+deps = []

@@ -12,6 +12,10 @@ if status is-interactive
     set -g fish_color_at ff0055
     set -g fish_color_host ffe600
 
+    set -gx EDITOR nvim
+    set -gx VISUAL nvim
+    set -gx SHELL (which fish)
+
     alias ls='ls --color=auto'
     alias lsa='ls -a --color=auto'
     alias grep='grep --color=auto'

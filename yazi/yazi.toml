@@ -1,0 +1,16 @@
+[opener]
+edit = [
+	{ run = 'nvim %s', block = true, desc = "Neovim", for = "unix" },
+]
+
+[open]
+rules = [
+	# Minden szöveges fájl (text/*) megnyitása az 'edit' openerrel
+	{ mime = "text/*", use = [ "edit", "reveal" ] },
+	
+	# Speciális szöveges/konfig fájlok
+	{ mime = "application/{json,x-ndjson,javascript,x-yaml,toml,xml}", use = [ "edit", "reveal" ] },
+	
+	# Tartalék szabály
+	{ url = "*", use = [ "edit", "open", "reveal" ] },
+]

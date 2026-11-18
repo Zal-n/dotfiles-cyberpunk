@@ -1,0 +1,4 @@
+[[mgr.prepend_keymap]]
+on   = [ "!" ]
+run  = 'shell "fish -i" --block'
+desc = "Interaktív Fish shell megnyitása"
